@@ -35,6 +35,7 @@
 Icon?
 ethumbs.db
 Thumbs.db
+desktop.ini
 
 # Autosave files #
 ##################
@@ -49,3 +50,7 @@ Thumbs.db
 *.sublime-project
 *.sublime-settings
 *.sublime-workspace
+
+# Documentation Files #
+####################
+*.pdf
