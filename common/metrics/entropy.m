@@ -3,7 +3,6 @@
 % assumes that the list of terms/values is limited to some dictionary of
 % integer vales. Using any kind of fractional values will, more than
 % likely, throw the entire calculation off.
-% Sungkwang touched this file.
 
 % Lets determine how many values we have in x
 c = unique(x);
