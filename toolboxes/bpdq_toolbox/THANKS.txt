@@ -1,0 +1,8 @@
+The BPDQ Toolbox Team warmly thanks: 
+
+* Gilles Puy who kindly shared with us the code of the TV prox written
+  in C from the work of Durand S., Fadili J. and Nikolova M
+
+* Michael Lustig, Ewout van den Berg, and Michael Friedlander who
+  kindly accepted that we use the file GENERATEANGIOGRAM.m part of the
+  GPL Sparco Toolbox and recalled here bpdq_generate_angiogram.m 

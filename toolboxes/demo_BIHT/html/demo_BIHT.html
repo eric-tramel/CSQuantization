@@ -1,0 +1,368 @@
+<html>
+<body>
+<style type="text/css">
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  /* max-width: 600px; */
+  /* Hack for IE6 */
+  width: 400; /*auto !important; width: 600px;*/
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+</style>
+<div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#2">Important parameters and functions</a></li>
+               <li><a href="#3">Generating a unit K-sparse signal in R^N (canonical basis)</a></li>
+               <li><a href="#4">Gaussian sensing matrix and associated 1-bit sensing</a></li>
+               <li><a href="#5">Testing BIHT</a></li>
+               <li><a href="#6">Testing BIHT-l2</a></li>
+               <li><a href="#7">Plotting results</a></li>
+            </ul>
+         </div><pre class="codeinput"><span class="comment">% This small matlab demo tests the Binary Iterative Hard Thresholding algorithm</span>
+<span class="comment">% developed in:</span>
+<span class="comment">%</span>
+<span class="comment">%  "Robust 1-bit CS via binary stable embeddings"</span>
+<span class="comment">%  L. Jacques, J. Laska, P. Boufounos, and R. Baraniuk</span>
+<span class="comment">%</span>
+<span class="comment">% More precisely, using paper notations, two versions of BIHT are tested</span>
+<span class="comment">% here on sparse signal reconstruction:</span>
+<span class="comment">%</span>
+<span class="comment">%  * the standard BIHT associated to the (LASSO like) minimization of</span>
+<span class="comment">%</span>
+<span class="comment">%        min || [ y o A(u) ]_- ||_1 s.t. ||u||_0 \leq K    (1)</span>
+<span class="comment">%</span>
+<span class="comment">%  * the (less efficient) BIHT-L2 related to</span>
+<span class="comment">%</span>
+<span class="comment">%        min || [ y o A(u) ]_- ||^2_2 s.t. ||u||_0 \leq K  (2)</span>
+<span class="comment">%</span>
+<span class="comment">% where y = A(x) := sign(Phi*x) are the 1-bit CS measurements of a initial</span>
+<span class="comment">% K-sparse signal x in R^N; Phi is a MxN Gaussian Random matrix of entries</span>
+<span class="comment">% iid drawn as N(0,1); [s]_-, equals to s if s &lt; 0 and 0 otherwise, is applied</span>
+<span class="comment">% component wise on vectors; "o" is the Hadamard product such that</span>
+<span class="comment">% (u o v)_i = u_i*v_i for two vectors u and v.</span>
+<span class="comment">%</span>
+<span class="comment">% Considering the (sub) gradient of the minimized energy in (1) and (2),</span>
+<span class="comment">% BIHT is solved through the iteration:</span>
+<span class="comment">%</span>
+<span class="comment">%     x^(n+1) = H_K( x^(n) - (1/M)*Phi'*(A(x^(n)) - y) )</span>
+<span class="comment">%</span>
+<span class="comment">% while BIHT-L2 is solved through:</span>
+<span class="comment">%</span>
+<span class="comment">%     x^(n+1) = H_K( x^(n) - (Y*Phi)' * [(Y*Phi*x^(n))]_-) )</span>
+<span class="comment">%</span>
+<span class="comment">% with Y = diag(y), H_K(u) the K-term thresholding keeping the K</span>
+<span class="comment">% highest amplitude of u and zeroing the others.</span>
+<span class="comment">%</span>
+<span class="comment">% Authors: J. Laska, L. Jacques, P. Boufounos, R. Baraniuk</span>
+<span class="comment">%          April, 2011</span>
+</pre><h2>Important parameters and functions<a name="2"></a></h2><pre class="codeinput">N = 2000; <span class="comment">% Signal dimension</span>
+M = 500;  <span class="comment">% Number of measurements</span>
+K = 15;   <span class="comment">% Sparsity</span>
+
+<span class="comment">% Negative function [.]_-</span>
+neg = @(in) in.*(in &lt;0);
+</pre><h2>Generating a unit K-sparse signal in R^N (canonical basis)<a name="3"></a></h2><pre class="codeinput">x0 = zeros(N,1);
+rp = randperm(N);
+x0(rp(1:K)) = randn(K,1);
+x0 = x0/norm(x0);
+</pre><h2>Gaussian sensing matrix and associated 1-bit sensing<a name="4"></a></h2><pre class="codeinput">Phi = randn(M,N);
+A = @(in) sign(Phi*in);
+
+y = A(x0);
+</pre><h2>Testing BIHT<a name="5"></a></h2><pre class="codeinput">maxiter = 3000;
+htol = 0;
+
+x = zeros(N,1);
+hd = Inf;
+
+ii=0;
+<span class="keyword">while</span>(htol &lt; hd)&amp;&amp;(ii &lt; maxiter)
+	<span class="comment">% Get gradient</span>
+	g = Phi'*(A(x) - y);
+
+	<span class="comment">% Step</span>
+	a = x - g;
+
+	<span class="comment">% Best K-term (threshold)</span>
+	[trash, aidx] = sort(abs(a), <span class="string">'descend'</span>);
+	a(aidx(K+1:end)) = 0;
+
+	<span class="comment">% Update x</span>
+	x = a;
+
+	<span class="comment">% Measure hammning distance to original 1bit measurements</span>
+	hd = nnz(y - A(x));
+	ii = ii+1;
+<span class="keyword">end</span>
+
+<span class="comment">% Now project to sphere</span>
+x = x/norm(x);
+
+BIHT_nbiter = ii;
+BIHT_l2_err = norm(x0 - x)/norm(x0);
+BIHT_Hamming_err = nnz(y - A(x));
+</pre><h2>Testing BIHT-l2<a name="6"></a></h2><pre class="codeinput">maxiter = 3000;
+htol = 0;
+
+x_l2 = Phi'*y;
+x_l2 = x_l2/norm(x_l2);
+hd = Inf;
+
+<span class="comment">% Update matrix (easier for computation)</span>
+cPhi = diag(y)*Phi;
+tau = 1/M;
+
+ii=0;
+<span class="keyword">while</span> (htol &lt; hd) &amp;&amp; (ii &lt; maxiter)
+	<span class="comment">% Compute Gradient</span>
+	g = tau*cPhi'*neg(cPhi*x_l2);
+
+	<span class="comment">% Step</span>
+	a = x_l2 - g;
+
+	<span class="comment">% Best K-term (threshold)</span>
+	[trash, aidx] = sort(abs(a), <span class="string">'descend'</span>);
+	a(aidx(K+1:end)) = 0;
+
+	<span class="comment">% Update x_l2</span>
+	x_l2 = a;
+
+	<span class="comment">% Measure hammning</span>
+	hd = nnz(y - sign(cPhi*x));
+	ii = ii+1;
+<span class="keyword">end</span>
+
+<span class="comment">%Now project to sphere</span>
+x_l2 = x_l2/norm(x_l2);
+
+BIHTl2_nbiter = ii;
+BIHTl2_l2_err = norm(x0 - x_l2)/norm(x0);
+BIHTl2_Hamming_err = nnz(y - A(x_l2));
+</pre><h2>Plotting results<a name="7"></a></h2><pre class="codeinput">figure;
+subplot(3,1,1);
+plot(x0, <span class="string">'linewidth'</span>, 2);
+title(<span class="string">'Original signal'</span>)
+ylim([-1 1]);
+
+subplot(3,1,2);
+plot(x, <span class="string">'linewidth'</span>, 2);
+title(sprintf(<span class="string">'BIHT reconstruction, L2 error: %e, Consistency score (Hamming error): %i, BIHT iterations: %i'</span>, <span class="keyword">...</span>
+    BIHT_l2_err, BIHT_Hamming_err, BIHT_nbiter));
+ylim([-1 1]);
+
+subplot(3,1,3);
+plot(x_l2, <span class="string">'linewidth'</span>, 2);
+title(sprintf(<span class="string">'BIHT-L2 reconstruction, L2 error: %e, Consistency score (Hamming error): %i, BIHT iterations: %i'</span>, <span class="keyword">...</span>
+    BIHTl2_l2_err, BIHTl2_Hamming_err, BIHTl2_nbiter));
+ylim([-1 1]);
+</pre><img vspace="5" width=100% hspace="5" src="demo_BIHT.png" alt=""> <p class="footer"><br>
+            Published with MATLAB&reg; 7.7<br></p>
+      </div>
+
+      <!--
+##### SOURCE BEGIN #####
+% This small matlab demo tests the Binary Iterative Hard Thresholding algorithm
+% developed in:
+%
+%  "Robust 1-bit CS via binary stable embeddings"
+%  L. Jacques, J. Laska, P. Boufounos, and R. Baraniuk
+%  
+% More precisely, using paper notations, two versions of BIHT are tested
+% here on sparse signal reconstruction:
+%
+%  * the standard BIHT associated to the (LASSO like) minimization of
+% 
+%        min || [ y o A(u) ]_- ||_1 s.t. ||u||_0 \leq K    (1)
+%
+%  * the (less efficient) BIHT-L2 related to 
+%
+%        min || [ y o A(u) ]_- ||^2_2 s.t. ||u||_0 \leq K  (2) 
+%
+% where y = A(x) := sign(Phi*x) are the 1-bit CS measurements of a initial
+% K-sparse signal x in R^N; Phi is a MxN Gaussian Random matrix of entries
+% iid drawn as N(0,1); [s]_-, equals to s if s < 0 and 0 otherwise, is applied
+% component wise on vectors; "o" is the Hadamard product such that 
+% (u o v)_i = u_i*v_i for two vectors u and v. 
+%
+% Considering the (sub) gradient of the minimized energy in (1) and (2),
+% BIHT is solved through the iteration:
+%
+%     x^(n+1) = H_K( x^(n) - (1/M)*Phi'*(A(x^(n)) - y) )
+%
+% while BIHT-L2 is solved through:
+%
+%     x^(n+1) = H_K( x^(n) - (Y*Phi)' * [(Y*Phi*x^(n))]_-) )
+%
+% with Y = diag(y), H_K(u) the K-term thresholding keeping the K
+% highest amplitude of u and zeroing the others. 
+%
+% Authors: J. Laska, L. Jacques, P. Boufounos, R. Baraniuk
+%          April, 2011
+
+%% Important parameters and functions
+
+N = 2000; % Signal dimension
+M = 500;  % Number of measurements
+K = 15;   % Sparsity
+
+% Negative function [.]_-
+neg = @(in) in.*(in <0); 
+
+%% Generating a unit K-sparse signal in R^N (canonical basis)
+
+x0 = zeros(N,1);
+rp = randperm(N);
+x0(rp(1:K)) = randn(K,1); 
+x0 = x0/norm(x0);
+
+
+%% Gaussian sensing matrix and associated 1-bit sensing
+
+Phi = randn(M,N);
+A = @(in) sign(Phi*in);
+
+y = A(x0);
+
+%% Testing BIHT
+
+maxiter = 3000;
+htol = 0;
+
+x = zeros(N,1);
+hd = Inf;
+
+ii=0;
+while(htol < hd)&&(ii < maxiter)
+	% Get gradient
+	g = Phi'*(A(x) - y);
+	
+	% Step
+	a = x - g;
+	
+	% Best K-term (threshold)
+	[trash, aidx] = sort(abs(a), 'descend');
+	a(aidx(K+1:end)) = 0;
+	
+    % Update x
+	x = a;
+
+	% Measure hammning distance to original 1bit measurements
+	hd = nnz(y - A(x));
+	ii = ii+1;
+end
+
+% Now project to sphere
+x = x/norm(x);
+
+BIHT_nbiter = ii;
+BIHT_l2_err = norm(x0 - x)/norm(x0);
+BIHT_Hamming_err = nnz(y - A(x));
+
+
+
+%% Testing BIHT-l2
+
+maxiter = 3000;
+htol = 0;
+
+x_l2 = Phi'*y;
+x_l2 = x_l2/norm(x_l2);
+hd = Inf;
+
+% Update matrix (easier for computation)
+cPhi = diag(y)*Phi;
+
+ii=0;
+while (htol < hd) && (ii < maxiter)
+	% Compute Gradient
+    g = cPhi'*neg(cPhi*x);
+	
+	% Step
+	a = x_l2 - g;
+	
+	% Best K-term (threshold)
+	[trash, aidx] = sort(abs(a), 'descend');
+	a(aidx(K+1:end)) = 0;
+	
+	% Update x_l2
+	x_l2 = a;
+	
+	% Measure hammning
+	hd = nnz(y - sign(cPhi*x));
+	ii = ii+1;
+end
+
+%Now project to sphere
+x_l2 = x_l2/norm(x_l2);
+
+BIHTl2_nbiter = ii;
+BIHTl2_l2_err = norm(x0 - x_l2)/norm(x0);
+BIHTl2_Hamming_err = nnz(y - A(x_l2));
+
+
+%% Plotting results
+
+figure;
+subplot(3,1,1);
+plot(x0, 'linewidth', 2);
+title('Original signal')
+
+subplot(3,1,2);
+plot(x, 'linewidth', 2);
+title(sprintf('BIHT reconstruction, L2 error: %e, Consistency score (Hamming error): %i, BIHT iterations: %i', ...
+    BIHT_l2_err, BIHT_Hamming_err, BIHT_nbiter));
+
+subplot(3,1,3);
+plot(x_l2, 'linewidth', 2);
+title(sprintf('BIHT-L2 reconstruction, L2 error: %e, Consistency score (Hamming error): %i, BIHT iterations: %i', ...
+    BIHTl2_l2_err, BIHTl2_Hamming_err, BIHTl2_nbiter));
+
+
+
+##### SOURCE END #####
+-->
+</body>
+</html>

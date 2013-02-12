@@ -1,0 +1,4 @@
+David Henrik Hammond <david.hammond@epfl.ch> (Main Programmer)
+Laurent Jacques <laurent.jacques@uclouvain.be>
+Mohamed-Jalal Fadili <Jalal.Fadili@greyc.ensicaen.fr>
+Gilles Puy <gilles.puy@epfl.ch>  (Programmer of the Prox TV C code)
