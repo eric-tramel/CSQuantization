@@ -4,8 +4,12 @@
 % integer vales. Using any kind of fractional values will, more than
 % likely, throw the entire calculation off.
 
+<<<<<<< HEAD
 
 % Sungkwang touched this file.
+=======
+% Eric Touched this file.
+>>>>>>> Test clashing commit.
 
 % Lets determine how many values we have in x
 c = unique(x);
