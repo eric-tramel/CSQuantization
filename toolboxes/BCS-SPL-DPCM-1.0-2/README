@@ -1,0 +1,71 @@
+==============================================================================
+
+                                DPCM for BCS-SPL
+
+                            Version 1.0, 14-aug-2012
+
+                    Copyright (C) 2012  James E. Fowler
+
+==============================================================================
+
+OVERVIEW:
+
+  These MATLAB programs implement the Differential Pulse-Code Modulation(DPCM) 
+  for the Block Compressed Sensing - Smoothed Projected Landweber (BCS-SPL) 
+  algorithm as described in paper:
+  
+  S. Mun and J. E. Fowler "DPCM for Quantized Block-Based Compressed Sensing
+  of Images," in Proceedings of the European Signal Processing Conference, 
+  Bucharest, Romania, August 2012, to appear.
+
+  Specifically, this code reproduces the experiment results of the
+  paper (Table 1), for the BCS-SPL, MH-BCS-SPL, MS-BCS-SPL, and
+  algorithms. Respectively, the code for these is:
+
+    run_experiment_bcsspl_dpcm.m
+    run_experiment_mhbcsspl_dpcm.m
+    run_experiment_msbcsspl_dpcm.m
+  
+  Parameters (subrates and quantizer bit-depths) used to generate the
+  rate-distortion curves are stored in the Parameters directory.
+
+  This code relies on BCS-SPL Version 1.5, MH-BCS-SPL Version 1.0, and 
+  MS-BCS-SPL Version 1.2 (http://www.ece.msstate.edu/~fowler/BCSSPL/), 
+  the Wavelet Software package (http://eeweb.poly.edu/iselesni/WaveletSoftware/),
+  Pascal Getreuer's waveletcdf97.m (http://www.getreuer.info/home/waveletcdf97),
+  and the ssim.m function (https://ece.uwaterloo.ca/~z70wang/research/ssim/).
+
+  Note that, since most of this code relies on random projections,
+  the results produced may differ slightly in appearance and
+  value from those of the paper.
+
+
+==============================================================================
+
+
+AVAILABILITY:
+
+  For updated versions of DPCM code and BCS-SPLs, as well as the article on
+  which it is based, consult:
+    http://www.ece.msstate.edu/~fowler/
+
+
+==============================================================================
+
+
+COPYRIGHT AND LICENSE INFORMATION:
+
+  Copyright (C) 2012  James E. Fowler
+  
+  The programs herein are free software; you can redistribute
+  them and/or modify them under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  All programs herein are distributed in the hope that
+  they will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+  the full text of the appropriate license for more details.
+  
+
+==============================================================================

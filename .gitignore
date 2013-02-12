@@ -41,9 +41,12 @@ desktop.ini
 ##################
 *.asv
 
-# Result files #
-##################
+# Result files and images#
+#####################
 *.mat
+*.pgm
+*.bmp
+*.png
 
 # IDE files #
 ##################

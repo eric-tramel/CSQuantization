@@ -1,0 +1,67 @@
+==============================================================================
+
+                                    BCS-SPL
+
+                            Version 1.5, 13-aug-2012
+
+                    Copyright (C) 2009-2012  James E. Fowler
+
+==============================================================================
+
+OVERVIEW:
+
+  These MATLAB programs implement the Block Compressed Sensing -
+  Smoothed Projected Landweber (BCS-SPL) algorithm as described in
+  paper:
+  
+    S. Mun and J. E. Fowler, "Block Compressed Sensing of Images
+    Using Directional Transforms," submitted to the IEEE
+    International Conference on Image Processing, 2009
+
+  Specifically, this code reproduces the experiment results of the
+  paper (Table 1), for the BCS-SPL-CT, BCS-SPL-DDWT, BCS-SPL-DWT, and
+  BCS-SPL-DCT algorithms. Respectively, the code for these is:
+
+    run_experiment_ct.m
+    run_experiment_ddwt.m
+    run_experiment_dwt.m
+    run_experiment_dct.m
+  
+  This code relies on the Contourlet Toolbox
+  (http://www.ifp.illinois.edu/~minhdo/software/) as well as the
+  Wavelet Software package (http://eeweb.poly.edu/iselesni/WaveletSoftware/).
+  Both will need to reside within the current MATLAB search path.
+
+  Note that, since most of this code relies on random projections,
+  the results produced may differ slightly in appearance and
+  value from those of the paper.
+
+==============================================================================
+
+
+AVAILABILITY:
+
+  For updated versions of BCS-SPL, as well as the article on
+  which it is based, consult:
+    http://www.ece.msstate.edu/~fowler/
+
+
+==============================================================================
+
+
+COPYRIGHT AND LICENSE INFORMATION:
+
+  Copyright (C) 2009-2012  James E. Fowler
+  
+  The programs herein are free software; you can redistribute
+  them and/or modify them under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  All programs herein are distributed in the hope that
+  they will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+  the full text of the appropriate license for more details.
+  
+
+==============================================================================
