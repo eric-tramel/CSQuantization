@@ -1,0 +1,31 @@
+{
+	"folders":
+	[
+		{
+			"path": "/C/Users/admin/Documents/GitHub/CSQuantization",
+			"name": "Root",
+			"folder_exclude_patterns": [""],
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "toolboxes",
+			"name": "Packages",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "common/metrics",
+			"name": "[Tools] Metrics",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "common/image",
+			"name": "[Tools] Image",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "biht",
+			"name": "1-Bit CS",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		}
+	]
+}

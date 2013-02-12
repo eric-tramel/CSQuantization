@@ -50,7 +50,6 @@ desktop.ini
 
 # IDE files #
 ##################
-*.sublime-project
 *.sublime-settings
 *.sublime-workspace
 

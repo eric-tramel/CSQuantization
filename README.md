@@ -6,6 +6,7 @@ Research code repository for ongoing development of methods connecting quantizat
 Contributors
 ---------------
 Eric W. Tramel, Ph. D.
+
 Sungkwang Mun, Ph. D.
 
 Repository Structure

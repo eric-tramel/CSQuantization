@@ -1,4 +1,4 @@
-function H = entropy(x,b)
+ function H = entropy(x,b)
 % Calculate the entropy, empirically, of the values of x. This function
 % assumes that the list of terms/values is limited to some dictionary of
 % integer vales. Using any kind of fractional values will, more than
