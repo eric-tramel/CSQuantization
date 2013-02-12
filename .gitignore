@@ -1,0 +1,51 @@
+# Compiled Code #
+################
+*.com
+*.dll
+*.class
+*.exe
+*.o
+*.so
+
+# Archives #
+###########
+*.7z
+*.dmg
+*.zip
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.gz
+
+# Logs and Database#
+#######
+*.log
+*.sql
+*.sqlite
+
+# OS Files #
+############
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ethumbs.db
+Thumbs.db
+
+# Autosave files #
+##################
+*.asv
+
+# Result files #
+##################
+*.mat
+
+# IDE files #
+##################
+*.sublime-project
+*.sublime-settings
+*.sublime-workspace
