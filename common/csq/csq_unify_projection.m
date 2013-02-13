@@ -1,4 +1,4 @@
-function [A AT] = unify_projection(inPhi,inPhiT,inPsi,inPsiT)
+function [A AT] = csq_unify_projection(inPhi,inPhiT,inPsi,inPsiT)
 % A = unify_projection(Phi,Psi)
 % This is a convenience function which joins together the projection matrix 
 % as well as the sparse transform into a single pair of function handles.
