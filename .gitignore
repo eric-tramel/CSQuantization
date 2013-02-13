@@ -48,6 +48,8 @@ desktop.ini
 *.pgm
 *.bmp
 *.png
+*.jpg
+*.j2k
 
 # IDE files #
 ##################
