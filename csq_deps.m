@@ -4,13 +4,16 @@ function csq_deps(varargin)
 % the desired directories are all reachable to allow for desired
 % functionality.
 
-% Clearing out your path -- no problems!
-restoredefaultpath
+% E.W.T. Removing default path restoration. Takes forever and it seems like
+% a bad idea overall.
+% % Clearing out your path -- no problems!
+% restoredefaultpath
 
 % Get current directory
 cd_str = cd;
 repo_name = 'CSQuantization';
 repo_dir = cd_str(1:(strfind(cd_str,repo_name)+length(repo_name)-1));
+addpath(repo_dir);
 
 % Check inputs and get strings to add
 for i=1:nargin
@@ -39,7 +42,12 @@ for i=1:nargin
             addpath([repo_dir '/toolboxes/BCS-SPL-1.5-1']);
         case 'mc-cs-pl'
             addpath([repo_dir '/toolboxes/MC-CS-PL']);
-        
+        case 'bcs-spl-dpcm'
+            addpath([repo_dir '/toolboxes/BCS-SPL-DPCM-1.0-2']);
+        case 'qamp'
+            addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedApproximateMessagePassing']);
+            addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedRelaxedBeliefPropagation']);
+            
         % Top level directories
         case 'biht'
             addpath([repo_dir '/biht']);

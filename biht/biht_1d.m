@@ -14,6 +14,7 @@ function x = biht_1d(y,Ain,params)
 %                       params.ATrans: NxM matrix function handle. Optional
 %                                      if A is a real matrix.
 %                       params.maxIter: Integer[1,...] (Default = 1000)
+%                       params.verbose
 %
 % This code is based on the work presented in 
 % L. Jauqes, J. Laska, P. T. Boufouros, and R. G. Baraniuk,
@@ -29,10 +30,12 @@ M = size(y,1);
 htol = 0;
 maxIter = 1000;
 k = round(M./4);
+verbose = 0;
 
 % Flags
 FLAG_Nspecified = 0;
 FLAG_ATransspecified = 0;
+
 
 %% Check the input parameters
 if isfield(params,'htol')
@@ -54,6 +57,10 @@ end
 if isfield(params,'N')
 	N = params.N;
     FLAG_Nspecified = 1;
+end
+
+if isfield(params,'verbose')
+    verbose = params.verbose;
 end
 
 
@@ -113,12 +120,20 @@ while (htol < hiter) && (iter < maxIter)
     
     % Evaluate
     hiter = nnz(y - A(x));
+    
+    if verbose
+        fprintf('[biht_1d.m] Iter %d: hiter = %d, ||g||_2 = %f\n',iter,hiter,norm(g));
+    end
+    
     iter = iter + 1;
 end
 
 % Finishing
 x = x ./ norm(x); 
 
+if verbose
+    fprintf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
+end
 
 
 
