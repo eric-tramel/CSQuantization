@@ -2,15 +2,18 @@ function x = biht_1d(y,Ain,params)
 % biht_1d(y,Phi,params)
 % Code to implement the basic 1D functionality of the the
 % 1-Bit CS recovery procedure: Binary Iterated Hard Thresholding.
+% Note: This code is only intended 
 %
 % Inputs:
 %       y		--		A Mx1 vector of 1-bit quantized CS measurements
-%       A		--		A MxN projection matrix used to calculate y = Ax
+%       A		--		A MxN projection matrix used to calculate y = Ax,
+%                       or a function handle which maps N->M.
 %       params	-- 		Structure lgorithm parameters:
-%					params.htol
-%					params.k
-%					params.ATrans
-%					params.maxIter
+%                       params.htol: Integer[0,N] (Default = 0).
+%                       params.k: Integer[0,N] (Default = M/4).
+%                       params.ATrans: NxM matrix function handle. Optional
+%                                      if A is a real matrix.
+%                       params.maxIter: Integer[1,...] (Default = 1000)
 %
 % This code is based on the work presented in 
 % L. Jauqes, J. Laska, P. T. Boufouros, and R. G. Baraniuk,
@@ -24,7 +27,7 @@ M = size(y,1);
 
 % Default Variables
 htol = 0;
-maxIter = 3000;
+maxIter = 1000;
 k = round(M./4);
 
 % Flags
