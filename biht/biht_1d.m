@@ -4,7 +4,7 @@ function x = biht_1d(y,Ain,params)
 % 1-Bit CS recovery procedure: Binary Iterated Hard Thresholding.
 %
 % Inputs:
-%	y		--		A Mx1 vector of 1-bit quantized CS measurements
+%       y		--		A Mx1 vector of 1-bit quantized CS measurements
 %       A		--		A MxN projection matrix used to calculate y = Ax
 %       params	-- 		Structure lgorithm parameters:
 %					params.htol
@@ -15,43 +15,62 @@ function x = biht_1d(y,Ain,params)
 % This code is based on the work presented in 
 % L. Jauqes, J. Laska, P. T. Boufouros, and R. G. Baraniuk,
 % "Robust 1-Bit Compressive Sensing via Binary Stable Embeddings"
+% and in its accompanying demonstration code.
 
 
 %% Variable Initialization
+% Fixed Variables
+M = size(y,1);
+
+% Default Variables
+htol = 0;
+maxIter = 3000;
+k = round(M./4);
+
 % Flags
-FLAG_bitsspecified = 0;
 FLAG_Nspecified = 0;
 FLAG_ATransspecified = 0;
-FLAG_Kspecified = 0;
-FLAG_htolspecified = 0;
 
 %% Check the input parameters
 if isfield(params,'htol')
-	FLAG_htolspecified = 1;
+	htol = params.htol;
 end
 
 if isfield(params,'k')
-	FLAG_Kspecified = 1;
+	k = params.k;
 end
 
-if isfield(params,'bits')
-	FLAG_bitsspecified = 1;
-end
-
-if isfield(params,'N')
-	FLAG_Nspecified = 1;
+if isfield(params,'maxIter')
+	maxIter = params.maxIter;
 end
 
 if isfield(params,'ATrans')
 	FLAG_ATransspecified = 1;
 end
 
+if isfield(params,'N')
+	N = params.N;
+    FLAG_Nspecified = 1;
+end
+
 
 %% Input handling
 if isa(Ain,'function_handle')
-	A =@(x) sign(Ain(x));
+	A = @(x) sign(Ain(x));
+    
+    if ~FLAG_Nspecified
+        error('biht_1d:MissingParameter','Original dimensionality, N, not specified.');
+    end
 else
-	A = @(x) sign(A*x);
+	A = @(x) sign(Ain*x);
+    Nn = size(Ain,2);
+    if ~FLAG_Nspecified
+        N = Nn;
+    else
+        if N ~= Nn
+            error('biht_1d:ParameterMismatch','Projection N and parameter N do not match.');
+        end
+    end
 end
 
 if (FLAG_ATransspecified)
@@ -67,5 +86,45 @@ else
 		AT = @(x) Ain'*x;
 	end
 end
+
+%% Recovery
+% Initialization
+x = zeros(N,1); 
+hiter = Inf;
+iter = 0;
+
+% Main Recovery Loop
+while (htol < hiter) && (iter < maxIter)
+    % Gradient
+    g = AT(A(x) - y);
+    
+    % Step
+    r = x - g;
+    
+    % K-Term approximation for thresholding
+    [toss,idx] = sort(abs(r),'descend');
+    r(idx(k+1:end)) = 0;
+    
+    % Update 
+    x = r;
+    
+    % Evaluate
+    hiter = nnz(y - A(x));
+    iter = iter + 1;
+end
+
+% Finishing
+x = x ./ norm(x); 
+
+
+
+
+
+
+
+
+
+
+
 
 
