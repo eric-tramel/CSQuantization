@@ -20,7 +20,6 @@ Phi = round(rand(M,N));
 Phi(Phi<0.5) = -1;
 
 x = im2col(original_image, [block_size block_size],'distinct')/norm(original_image(:));
-K = round(0.5*N);
 
 bit = 2;
 rate = bit*subrate;
