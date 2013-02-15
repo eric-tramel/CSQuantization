@@ -10,6 +10,9 @@ X = csq_load_data('image','goldhill.jpg');
 x = X(:);
 imsize = size(X);
 
+% Normalization
+x = x ./ norm(x);
+
 % Set up wavelet transform
 xparams.L = 5;
 xparams.imSize = imsize;
