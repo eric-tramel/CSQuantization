@@ -8,13 +8,13 @@ csq_deps('common','biht');
 
 % Experiment variables
 N = 1024;
-M = 256;
+M = 512;
 K = 20;
 
 % Generate signal
 x = zeros(N,1);
 p = randperm(N);
-x(p(1:K)) = rand(K,1);
+x(p(1:K)) = randn(K,1);
 x = x ./ norm(x);
 
 % Generate projection and transform

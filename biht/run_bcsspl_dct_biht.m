@@ -3,7 +3,7 @@ function psnr = run_bcsspl_dct_biht
 % Should use the new csq_deps
 %addpath(genpath('c:\Dropbox\work\Common\BCS-SPL'));
 %addpath(genpath('../toolboxes/BCS-SPL-1.5-1'));
-csq_deps('bcs-spl','common-csq','common-image')
+csq_deps('bcs-spl','common-csq','common-image');
 
 % Using the csq_ glue for loading data
 %original_image = double(imread('lenna.pgm'));

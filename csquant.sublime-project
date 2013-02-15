@@ -13,6 +13,11 @@
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
 		},
 		{
+			"path": "examples",
+			"name": "Examples",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
 			"path": "common/csq",
 			"name": "[Tools] CSQ Glue",
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
