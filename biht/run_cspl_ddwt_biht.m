@@ -7,7 +7,7 @@ addpath(genpath('c:\Dropbox\work\Common\SRM'));
 addpath(genpath('../toolboxes/BCS-SPL-1.5-1'));
 global original_image
 
-original_image = double(imread('lenna.pgm'));
+original_image = double(imread('goldhill.pgm'));
 [num_rows num_cols] = size(original_image);
 
 subrate = 0.9;

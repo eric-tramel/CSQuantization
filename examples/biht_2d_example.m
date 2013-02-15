@@ -7,7 +7,7 @@ clear
 csq_deps('common','biht','wavelet','srm');
 
 X = csq_load_data('image','goldhill.jpg');
-x = X(:);
+x = X(:)/norm(X(:));
 imsize = size(X);
 
 % Normalization
@@ -19,11 +19,14 @@ xparams.imSize = imsize;
 
 [psi invpsi] = csq_generate_xform('dwt2d',xparams);
 
+x = psi(x);
+% x = x ./ norm(x);
+
 % Experiment variables
-subrate = 0.5;
+subrate = 0.9;
 N = imsize(1)*imsize(2);
 M = round(subrate*N);
-K = round(0.25*N);
+K = round(0.05*N);
 
 % Generate projection and transform
 rand_vect = randperm(N)';
@@ -41,7 +44,7 @@ y = sign(A(x));
 % Recovery parameters
 params.k = K;
 params.htol = 0;
-params.maxIter = 3000;
+params.maxIter = 200;
 params.ATrans = AT;
 params.N = N;
 params.verbose = 1;
@@ -58,5 +61,5 @@ fprintf('Recovered x in %0.2f sec. MSE = %f\n',biht_time,mse);
 
 %% Put up image
 figure(1);
-imagesc(reshape(xhat,imsize)); colormap(gray);
+imagesc(reshape(invpsi(xhat),imsize)); colormap(gray);
 
