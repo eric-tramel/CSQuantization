@@ -44,6 +44,8 @@ for i=1:nargin
             addpath([repo_dir '/toolboxes/MC-CS-PL']);
         case 'bcs-spl-dpcm'
             addpath([repo_dir '/toolboxes/BCS-SPL-DPCM-1.0-2']);
+        case 'srm'
+            addpath([repo_dir '/toolboxes/SRM/Measurements']);
         case 'qamp'
             addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedApproximateMessagePassing']);
             addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedRelaxedBeliefPropagation']);

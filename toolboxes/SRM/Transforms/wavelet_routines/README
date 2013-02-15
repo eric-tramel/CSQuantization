@@ -1,0 +1,16 @@
+
+520.646 Wavelets & Time-Frequency Analysis - Spring 2000
+		Trac D. Tran
+
+In this package you will find:
+
+1. dwt1d, idwt1d: forward & inverse 1D discrete wavelet transform
+2. dwt2d, idwt2d: forward & inverse 2D discrete wavelet transform
+3. lphd, lphr: fast forward & inverse 2D discrete wavelet transform;
+               requiring linear phase filters.
+4. lpdec, lprec, lphdec, lphrec: supporting routines
+5. mydisplay: function to display a grayscale image
+6. psnr: function to compute the PSNR & MSE between 2 signals
+7. boat: 8-bit grayscale image of a nice boat. You are welcome to
+         use other interesting images!
+ 
