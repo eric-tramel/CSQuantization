@@ -36,8 +36,12 @@ num_cols = params.imSize(2);
 
 % Set the function handles
 psi = @(x) csq_dwt_cell2vec(dwt2D(reshape(x,[num_rows num_cols]),L,af));
-invpsi = @(x) idwt2D(csq_dwt_vec2cell(x,num_rows,num_cols,L),L,sf)(:);
+invpsi = @(x) vectorize(idwt2D(csq_dwt_vec2cell(x,num_rows,num_cols,L),L,sf));
 
+
+%-----------
+function v = vectorize(y)
+	v = y(:);
 
 
 
