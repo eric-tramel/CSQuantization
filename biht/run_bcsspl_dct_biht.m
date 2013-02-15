@@ -1,9 +1,14 @@
 function psnr = run_bcsspl_dct_biht
 
-addpath(genpath('c:\Dropbox\work\Common\BCS-SPL'));
-addpath(genpath('../toolboxes/BCS-SPL-1.5-1'));
+% Should use the new csq_deps
+%addpath(genpath('c:\Dropbox\work\Common\BCS-SPL'));
+%addpath(genpath('../toolboxes/BCS-SPL-1.5-1'));
+csq_deps('bcs-spl','common-csq','common-image')
 
-original_image = double(imread('lenna.pgm'));
+% Using the csq_ glue for loading data
+%original_image = double(imread('lenna.pgm'));
+original_image = csq_load_data('image','lena.jpg'); % My file location is different !
+
 [num_rows num_cols] = size(original_image);
 
 subrate = 8.0;
