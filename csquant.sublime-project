@@ -2,7 +2,7 @@
 	"folders":
 	[
 		{
-			"path": "/C/Users/admin/Documents/GitHub/CSQuantization",
+			"path": ".",
 			"name": "Root",
 			"folder_exclude_patterns": [""],
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
@@ -10,6 +10,11 @@
 		{
 			"path": "toolboxes",
 			"name": "Packages",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "common/csq",
+			"name": "[Tools] CSQ Glue",
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
 		},
 		{
