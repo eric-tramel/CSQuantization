@@ -55,6 +55,7 @@ desktop.ini
 ##################
 *.sublime-settings
 *.sublime-workspace
+octave-core
 
 # Documentation Files #
 ####################
