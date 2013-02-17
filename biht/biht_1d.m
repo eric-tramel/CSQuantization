@@ -35,7 +35,7 @@ verbose = 0;
 % Flags
 FLAG_Nspecified = 0;
 FLAG_ATransspecified = 0;
-
+FLAG_Kspecified = 0;
 
 %% Check the input parameters
 if isfield(params,'htol')
@@ -44,6 +44,7 @@ end
 
 if isfield(params,'k')
 	k = params.k;
+    FLAG_Kspecified = 1;
 end
 
 if isfield(params,'maxIter')
@@ -61,6 +62,15 @@ end
 
 if isfield(params,'verbose')
     verbose = params.verbose;
+end
+
+if isfield(params,'threshold')
+    threshold = params.threshold;
+else
+    if ~FLAG_Kspecified
+        error('biht1d:NoK','Need to know how many coefficients to retain on each iteration.');
+    end
+    threshold = csq_generate_threshold('top',params);
 end
 
 
@@ -111,12 +121,8 @@ while (htol < hiter) && (iter < maxIter)
     % Step
     r = x - g;
     
-    % K-Term approximation for thresholding
-    [toss,idx] = sort(abs(r),'descend');
-    r(idx(k+1:end)) = 0;
-    
     % Update 
-    x = r;
+    x = threshold(r);
     
     % Evaluate
     hiter = nnz(y - A(x));

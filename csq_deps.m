@@ -21,7 +21,7 @@ for i=1:nargin
         % Common directories
         case 'common'
             addpath([repo_dir '/common']);
-            csq_deps('common-image','common-csq','common-metrics');
+            csq_deps('common-image','common-csq','common-metrics','common-threshold');
         case 'common-image'
             if (exist('im2col') + exist('col2im')) == 0
                 addpath([repo_dir '/common/image/conflicts']);
@@ -31,7 +31,9 @@ for i=1:nargin
             addpath([repo_dir '/common/csq'])
         case 'common-metrics'
             addpath([repo_dir '/common/metrics']);
-            
+        case 'common-threshold'
+            addpath([repo_dir '/common/threshold']);
+          
         % Toolbox directories
         case 'ssim'
             addpath([repo_dir '/toolboxes/ssim']);

@@ -39,5 +39,5 @@ else
 end
 
 %% Set Handles
-A =  @(x) Phi(Psi(x));
-AT = @(x) PsiT(PhiT(x));
+A =  @(x) Phi(PsiT(x));
+AT = @(x) Psi(PhiT(x));

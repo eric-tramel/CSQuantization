@@ -7,6 +7,8 @@ function [psi invpsi] = csq_generate_xform(xform,params)
 
 
 switch xform
+    case 'dct2d'
+       [psi invpsi] = xform_dct2d(params);
     case 'dwt2d' 
        [psi invpsi] = xform_dwt2d(params);
     otherwise
@@ -18,18 +20,27 @@ end
 
 
 %--------------------------------------------------
+function [psi invpsi] = xform_dct2d(params)
+% Returns the forward and inverse handles for a 2D image DCT transform
+
+% Verify parameters
+csq_required_parameters(params,'imsize');
+
+psi = @(x) vectorize(dct2(reshape(x,params.imsize)));
+invpsi = @(x) vectorize(idct2(reshape(x,params.imsize)));
+
 
 function [psi invpsi] = xform_dwt2d(params)
 % Returns forward and inverse handles for the wavlet transform with specified
 % parameters
 
 % Verify required parameters are included
-csq_required_parameters(params,'L','imSize');
+csq_required_parameters(params,'L','imsize');
 
 % Variables
 L = params.L;
-num_rows = params.imSize(1);
-num_cols = params.imSize(2);
+num_rows = params.imsize(1);
+num_cols = params.imsize(2);
 
 % Set wavelet filters
 [af sf] = farras;
