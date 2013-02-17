@@ -21,10 +21,11 @@ for i=1:nargin
         % Common directories
         case 'common'
             addpath([repo_dir '/common']);
-            addpath([repo_dir '/common/image']);
-            addpath([repo_dir '/common/csq']);
-            addpath([repo_dir '/common/metrics']);
+            csq_deps('common-image','common-csq','common-metrics');
         case 'common-image'
+            if (exist('im2col') + exist('col2im')) == 0
+                addpath([repo_dir '/common/image/conflicts']);
+            end
             addpath([repo_dir '/common/image']);
         case 'common-csq'
             addpath([repo_dir '/common/csq'])
