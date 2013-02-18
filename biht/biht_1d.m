@@ -130,7 +130,9 @@ while (htol < hiter) && (iter < maxIter)
     hiter = nnz(y - A(x));
     
     if verbose
-        fprintf('[biht_1d.m] Iter %d: hiter = %d, ||g||_2 = %f\n',iter,hiter,norm(g));
+        report_str = sprintf('[biht_1d.m] Iter %d: hiter = %d, ||g||_2 = %f',iter,hiter,norm(g));
+        disp(report_str);
+        % fflush(stdout); <---- Only use if running Octave. Forces line display
     end
     
     iter = iter + 1;
@@ -155,7 +157,9 @@ end
 x = x ./ norm(x); 
 
 if verbose
-    fprintf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
+    report_str = sprintf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.',iter,hiter);
+    disp(report_str);
+    % fflush(stdout); <---- Only use if running Octave. Forces line display
 end
 
 
