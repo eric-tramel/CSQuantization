@@ -6,45 +6,38 @@
 clear
 csq_deps('common','biht','wavelet','srm');
 
-global invpsi
-
-% Determine sparse transform
-xform = 'dwt2d';
-
+% Load in data
 X = csq_load_data('image','cameraman.jpg');
-x = X(:);
-% x = X(:)/norm(X(:));
 imsize = size(X);
+x = X(:);
 
 % Normalization
 % x = x ./ norm(x);
-N = length(x);
 
 % Set up wavelet transform
-xparams.L = 8; %log2(min(size(X))-1
-xparams.imsize = imsize;
+params.L = log2(min(imsize))-1; % Maximum decomposition
+params.imsize = imsize;
+params.N = imsize(1)*imsize(2);
 % Additional parameters for bivariate shrinkage
-xparams.end_level = xparams.L - 1;
-xparams.windowsize = 3;
-xparams.lambda = 5;
-xparams.k = round(0.05*N);
+params.end_level = params.L - 1;
+params.windowsize = 3;
+params.lambda = 5;
+params.k = round(0.05*params.N);
 
-[psi invpsi] = csq_generate_xform(xform,xparams);
+[psi invpsi] = csq_generate_xform('dwt2d',params);
 
-bs_threshold = csq_generate_threshold('bivariate-shrinkage',xparams);
+bs_threshold = csq_generate_threshold('bivariate-shrinkage',params);
 
 % Experiment variables
 subrate = 0.5;
-N = imsize(1)*imsize(2);
-M = round(subrate*N);
-K = round(0.05*N);
+M = round(subrate*params.N);
 
 % Generate projection and transform
-rand_vect = randperm(N)';
-select_vect = randperm(round(N/2)-1)+1;
+rand_vect = randperm(params.N)';
+select_vect = randperm(round(params.N/2)-1)+1;
 select_vect = select_vect(1:round(M/2))';
 Phi = @(z) fft1d_f(z, select_vect, rand_vect);
-Phi_t = @(z) fft1d_t(z, N, select_vect, rand_vect);
+Phi_t = @(z) fft1d_t(z, params.N, select_vect, rand_vect);
 
 
 [A AT] = csq_unify_projection(Phi,Phi_t,psi,invpsi);
@@ -53,15 +46,12 @@ Phi_t = @(z) fft1d_t(z, N, select_vect, rand_vect);
 y = sign(Phi(x));
 
 % Recovery parameters
-params.k = K;
 params.htol = 0;
-params.maxIter = 400;
+params.maxIter = 10;
 params.ATrans = AT;
-params.N = N;
 params.verbose = 1;
 params.threshold = bs_threshold;
-params.imsize = size(X);
-params.L = xparams.L;
+params.invpsi = invpsi;
 
 % BIHT Recovery
 tic
@@ -69,14 +59,14 @@ xhat = biht_1d(y,A,params);
 biht_time = toc;
 
 % Evaluation
-mse = sum(norm(xhat-x).^2)./N;
+mse = sum(norm(xhat-x).^2)./params.N;
 
 fprintf('Recovered x in %0.2f sec. MSE = %f\n',biht_time,mse);
-fprintf('Bitrate = %f bpp.\n',M/N);
+fprintf('Bitrate = %f bpp.\n',M/params.N);
 
 %% Put up image
 figure(1);
-imagesc(reshape(invpsi(xhat),imsize)); 
+imagesc(reshape(xhat,imsize)); 
 axis image;
 colormap(gray);
 

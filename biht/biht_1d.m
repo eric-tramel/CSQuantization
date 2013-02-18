@@ -73,6 +73,12 @@ else
     threshold = csq_generate_threshold('top',params);
 end
 
+if isfield(params,'invpsi')
+    invpsi = params.invpsi;
+else
+    invpsi = @(x) x;
+end
+
 
 %% Input handling
 if isa(Ain,'function_handle')
@@ -113,8 +119,6 @@ x = zeros(N,1);
 hiter = Inf;
 iter = 0;
 
-global invpsi
-
 % Main Recovery Loop
 while (htol < hiter) && (iter < maxIter)
     % Gradient
@@ -132,34 +136,36 @@ while (htol < hiter) && (iter < maxIter)
     if verbose
         report_str = sprintf('[biht_1d.m] Iter %d: hiter = %d, ||g||_2 = %f',iter,hiter,norm(g));
         disp(report_str);
-        % fflush(stdout); <---- Only use if running Octave. Forces line display
+        fflush(stdout);  % <---- Only use if running Octave. Forces line display
     end
     
     iter = iter + 1;
 
-    figure(1);
-    L = params.L;
-    for l=1:L
-        W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
-        subplot(L+1,1,l);
-        imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
-    end
-    subplot(L+1,1,L+1);
-    imagesc(abs(W{L+1})); axis image;
+    %% Debug code for the two-dimensional case
+    % figure(1);
+    % L = params.L;
+    % for l=1:L
+    %     W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
+    %     subplot(L+1,1,l);
+    %     imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
+    % end
+    % subplot(L+1,1,L+1);
+    % imagesc(abs(W{L+1})); axis image;
  
-    figure(2);
-    imagesc(reshape(invpsi(x),params.imsize)); axis image;
-    axis image;
-    colormap(gray);
+    % figure(2);
+    % imagesc(reshape(invpsi(x),params.imsize)); axis image;
+    % axis image;
+    % colormap(gray);
 end
 
 % Finishing
+x = invpsi(x);
 x = x ./ norm(x); 
 
 if verbose
     report_str = sprintf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.',iter,hiter);
     disp(report_str);
-    % fflush(stdout); <---- Only use if running Octave. Forces line display
+    fflush(stdout); % <---- Only use if running Octave. Forces line display
 end
 
 
