@@ -25,7 +25,7 @@ x = original_image(:);
 y = Phi(x);
 yq = sign(y);
 
-x_hat = CS_PL_DDWT_Decoder_1bit(yq, Phi, Phi_t, num_rows, num_cols);
+x_hat = CS_PL_DDWT_Decoder_1bit(yq, Phi, Phi_t, num_rows, num_cols,2);
 
 reconstructed_image = x_hat;
 psnr = PSNR(reconstructed_image, original_image);
@@ -34,7 +34,7 @@ psnr = PSNR(reconstructed_image, original_image);
 function reconstructed_image = ...
   CS_PL_DDWT_Decoder_1bit(y, Phi, Phi_t, num_rows, num_cols, num_levels, max_iterations)
 
-lambda = 100;
+lambda = 50;
 
 if (nargin < 7)
   max_iterations = 200;
