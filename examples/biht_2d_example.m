@@ -6,31 +6,35 @@
 clear
 csq_deps('common','biht','wavelet','srm');
 
+global invpsi
 
 % Determine sparse transform
 xform = 'dwt2d';
 
 X = csq_load_data('image','cameraman.jpg');
-x = X(:)/norm(X(:));
+x = X(:);
+% x = X(:)/norm(X(:));
 imsize = size(X);
 
 % Normalization
-x = x ./ norm(x);
+% x = x ./ norm(x);
+N = length(x);
 
 % Set up wavelet transform
-xparams.L = 3;
+xparams.L = 8; %log2(min(size(X))-1
 xparams.imsize = imsize;
 % Additional parameters for bivariate shrinkage
 xparams.end_level = xparams.L - 1;
 xparams.windowsize = 3;
-xparams.lambda = 20;
+xparams.lambda = 5;
+xparams.k = round(0.05*N);
 
 [psi invpsi] = csq_generate_xform(xform,xparams);
 
 bs_threshold = csq_generate_threshold('bivariate-shrinkage',xparams);
 
 % Experiment variables
-subrate = 0.9;
+subrate = 0.5;
 N = imsize(1)*imsize(2);
 M = round(subrate*N);
 K = round(0.05*N);
@@ -56,6 +60,8 @@ params.ATrans = AT;
 params.N = N;
 params.verbose = 1;
 params.threshold = bs_threshold;
+params.imsize = size(X);
+params.L = xparams.L;
 
 % BIHT Recovery
 tic

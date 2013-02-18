@@ -113,6 +113,8 @@ x = zeros(N,1);
 hiter = Inf;
 iter = 0;
 
+global invpsi
+
 % Main Recovery Loop
 while (htol < hiter) && (iter < maxIter)
     % Gradient
@@ -132,6 +134,21 @@ while (htol < hiter) && (iter < maxIter)
     end
     
     iter = iter + 1;
+
+    figure(1);
+    L = params.L;
+    for l=1:L
+        W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
+        subplot(L+1,1,l);
+        imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
+    end
+    subplot(L+1,1,L+1);
+    imagesc(abs(W{L+1})); axis image;
+ 
+    figure(2);
+    imagesc(reshape(invpsi(x),params.imsize)); axis image;
+    axis image;
+    colormap(gray);
 end
 
 % Finishing
