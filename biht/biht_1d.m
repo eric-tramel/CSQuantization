@@ -29,8 +29,8 @@ M = size(y,1);
 % Default Variables
 htol = 0;
 maxIter = 1000;
-k = round(M./4);
 verbose = 0;
+conv = 1e-6;
 
 % Flags
 FLAG_Nspecified = 0;
@@ -43,7 +43,6 @@ if isfield(params,'htol')
 end
 
 if isfield(params,'k')
-	k = params.k;
     FLAG_Kspecified = 1;
 end
 
@@ -115,12 +114,21 @@ end
 
 %% Recovery
 % Initialization
-x = zeros(N,1); 
+% x = zeros(N,1); 
+x = AT(y);
 hiter = Inf;
 iter = 0;
+conv_check = Inf;
 
 % Main Recovery Loop
-while (htol < hiter) && (iter < maxIter)
+while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
+    % Convergence checking
+    xprev = x;
+    
+%     % DEBUG: Smoothing
+%     x = params.smoothing(x);
+%     x(isnan(x)) = 0;
+    
     % Gradient
     g = AT(A(x) - y);
     
@@ -134,28 +142,30 @@ while (htol < hiter) && (iter < maxIter)
     hiter = nnz(y - A(x));
     
     if verbose
-        report_str = sprintf('[biht_1d.m] Iter %d: hiter = %d, ||g||_2 = %f',iter,hiter,norm(g));
-        disp(report_str);
-        fflush(stdout);  % <---- Only use if running Octave. Forces line display
+        csq_printf('[biht_1d.m] Iter %d: \\delta = %f, hiter = %d, ||g||_2 = %f.\n',iter,nnz(x)./N,hiter,norm(g));
     end
     
     iter = iter + 1;
 
+    conv_check = norm(x-xprev)./N;
+    
     %% Debug code for the two-dimensional case
-    % figure(1);
-    % L = params.L;
-    % for l=1:L
-    %     W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
-    %     subplot(L+1,1,l);
-    %     imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
-    % end
-    % subplot(L+1,1,L+1);
-    % imagesc(abs(W{L+1})); axis image;
+%     figure(1);
+%     plot(abs(x)); axis tight; grid on; box on;
+%     figure(1);
+%     L = params.L;
+%     for l=1:L
+%         W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
+%         subplot(L+1,1,l);
+%         imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
+%     end
+%     subplot(L+1,1,L+1);
+%     imagesc(abs(W{L+1})); axis image;
  
-    % figure(2);
-    % imagesc(reshape(invpsi(x),params.imsize)); axis image;
-    % axis image;
-    % colormap(gray);
+    figure(2);
+    imagesc(reshape(invpsi(x),params.imsize)); axis image;
+    axis image;
+    colormap(gray);
 end
 
 % Finishing
@@ -163,9 +173,7 @@ x = invpsi(x);
 x = x ./ norm(x); 
 
 if verbose
-    report_str = sprintf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.',iter,hiter);
-    disp(report_str);
-    fflush(stdout); % <---- Only use if running Octave. Forces line display
+    csq_printf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
 end
 
 
