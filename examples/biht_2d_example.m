@@ -4,7 +4,7 @@
 
 %% Set dependencies
 clear
-csq_deps('common','biht','wavelet','srm');
+csq_deps('common','biht','wavelet','srm','ssim');
 
 %% Load in data
 X = csq_load_data('image','lena.jpg');
@@ -36,10 +36,10 @@ params.windowsize = 3;
 params.lambda = 50;
 params.k = round(0.1*params.N);
 % Projection parameters
-params.block_based = 1;
+params.block_based = 0;
 params.block_dim = [32 32];
 params.Nb = (imsize(1)./params.block_dim(1))*(imsize(2)./params.block_dim(2));
-params.subrate = 4;
+params.subrate = 0.7;
 M = round(params.subrate*N);
 params.M = M;
 % SRM specific parameters
@@ -61,7 +61,7 @@ top_threshold = csq_generate_threshold('top',params);
 
 
 %% Random Projection Function Handles
-[Phi Phi_t] = csq_generate_projection('gaussian',params);
+[Phi Phi_t] = csq_generate_projection('srm-fft',params);
 
 %% Unification
 [A AT] = csq_unify_projection(Phi,Phi_t,psi,invpsi);
@@ -81,17 +81,33 @@ tic
 xhat = biht_1d(y,A,params);
 biht_time = toc;
 
-%% Evaluation
+%% Attempt Rescaling
 xhat = xhat + Xmu;  % Return the mean to the result
-% mse = sum(norm(xhat-x).^2)./params.N;
-d_snr = SNR(xhat,X(:));
+xhat = (xhat - min(xhat)) ./ (max(xhat) - min(xhat));
+xhat = (Xrange(2) - Xrange(1)).*(xhat + Xrange(1));
+xhat = xhat ./ norm(xhat);
+xhat = reshape(xhat,imsize);
 
-csq_printf('Recovered x in %0.2f sec. SNR = %f dB\n',biht_time,d_snr);
+resc_X = 255*(X - Xrange(1))./(Xrange(2) - Xrange(1));
+resc_xhat = 255*(xhat - min(xhat(:))) ./ (max(xhat(:)) - min(xhat(:)));
+
+%% Evaluation
+d_mse = MSE(X,xhat);
+d_snr = SNR(xhat(:),X(:));
+d_rms = RMS(X,xhat);
+% d_ssim = ssim(X,xhat,[0.01 0.03],fspecial('gaussian', 11, 1.5),1);
+d_ssim = ssim(resc_X,resc_xhat);
+
+csq_printf('Recovered x in %0.2f sec.\n',biht_time);
+csq_printf('SNR = %f dB\n',d_snr);
+csq_printf('MSE = %f, (Log: %f)\n',d_mse,log10(d_mse));
+csq_printf('RMS = %f, (Log: %f)\n',d_rms,log10(d_rms));
+csq_printf('SSIM = %f\n',d_ssim);
 csq_printf('Bitrate = %f bpp.\n',M/params.N);
 
 %% Put up image
 figure(1);
-imagesc(reshape(xhat,imsize)); 
+imagesc(xhat); 
 axis image;
 colormap(gray);
 
