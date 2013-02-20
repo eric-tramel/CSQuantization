@@ -52,6 +52,8 @@ for i=1:nargin
         case 'qamp'
             addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedApproximateMessagePassing']);
             addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedRelaxedBeliefPropagation']);
+        case 'biht-aop'
+            addpath([repo_dir '/toolboxes/AOP1BCSv1']);
             
         % Top level directories
         case 'biht'
