@@ -1,4 +1,4 @@
-function x = biht_1d(y,Ain,params)
+function x = biht_2d(y,Ain,params)
 % biht_1d(y,Phi,params)
 % Code to implement the basic 1D functionality of the the
 % 1-Bit CS recovery procedure: Binary Iterated Hard Thresholding.
@@ -27,7 +27,7 @@ function x = biht_1d(y,Ain,params)
 htol = 0;
 maxIter = 1000;
 verbose = 0;
-conv = 1e-10;
+conv = 1e-6;
 
 % Flags
 FLAG_Nspecified = 0;
@@ -111,12 +111,10 @@ end
 
 %% Recovery
 % Initialization
-% x = zeros(N,1); 
 x = AT(y);
 hiter = Inf;
 iter = 0;
 conv_check = Inf;
-M = length(y);
 
 % Main Recovery Loop
 while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
@@ -130,11 +128,8 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     r = x + (1/M) .* g;
     
     % Update 
-    x = params.smoothing(x);
-    x = threshold(r); 
-    
-    % Normalize
-    x = x ./ norm(x);
+    x = threshold(r);
+    x = x ./ norm (x);
     
     % Evaluate
     hiter = nnz(y - A(x));
@@ -161,14 +156,9 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
 %     imagesc(abs(W{L+1})); axis image;
  
     figure(2);
-    subplot(1,2,1);
-    imagesc(reshape(invpsi(x),params.imsize));
-    axis image;
-    subplot(1,2,2);
-    imagesc(reshape(abs(invpsi(g)),params.imsize));
+    imagesc(reshape(invpsi(x),params.imsize)); axis image;
     axis image;
     colormap(gray);
-    refresh;
 end
 
 % Finishing

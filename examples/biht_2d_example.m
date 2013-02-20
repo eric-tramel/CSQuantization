@@ -33,7 +33,7 @@ params.N = N;
 % Additional parameters for bivariate shrinkage
 params.end_level = params.L - 1;
 params.windowsize = 3;
-params.lambda = 1;
+params.lambda = 50;
 params.k = round(0.1*params.N);
 % Projection parameters
 params.block_based = 1;
@@ -47,7 +47,7 @@ params.blksize = 32;
 params.trans_mode = 'BWHT';
 % Recovery parameters
 params.htol = 0;
-params.maxIter = 1000;
+params.maxIter = 3000;
 params.verbose = 1;
 % Side parameters
 blockN = params.block_dim(1)*params.block_dim(2);
@@ -72,7 +72,8 @@ y = sign(Phi(x));
 %% Recovery
 % Recovery parameters
 params.ATrans = AT;
-params.threshold = @(z) top_threshold(bs_threshold(z));
+% params.threshold = @(z) top_threshold(bs_threshold(z));
+params.threshold = bs_threshold;
 params.invpsi = invpsi;
 
 % BIHT Recovery
