@@ -34,7 +34,7 @@ params.N = N;
 params.end_level = params.L - 1;
 params.windowsize = 3;
 params.lambda = 1;
-params.k = round(0.5*params.N);
+params.k = round(0.1*params.N);
 % Projection parameters
 params.block_based = 1;
 params.block_dim = [32 32];
@@ -72,7 +72,7 @@ y = sign(Phi(x));
 %% Recovery
 % Recovery parameters
 params.ATrans = AT;
-params.threshold = bs_threshold;
+params.threshold = @(z) top_threshold(bs_threshold(z));
 params.invpsi = invpsi;
 
 % BIHT Recovery

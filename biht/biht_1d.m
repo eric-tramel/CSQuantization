@@ -23,9 +23,6 @@ function x = biht_1d(y,Ain,params)
 
 
 %% Variable Initialization
-% Fixed Variables
-M = size(y,1);
-
 % Default Variables
 htol = 0;
 maxIter = 1000;
@@ -125,10 +122,6 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     % Convergence checking
     xprev = x;
     
-%     % DEBUG: Smoothing
-%     x = params.smoothing(x);
-%     x(isnan(x)) = 0;
-    
     % Gradient
     g = AT(A(x) - y);
     
@@ -162,10 +155,10 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
 %     subplot(L+1,1,L+1);
 %     imagesc(abs(W{L+1})); axis image;
  
-    figure(2);
-    imagesc(reshape(invpsi(x),params.imsize)); axis image;
-    axis image;
-    colormap(gray);
+%     figure(2);
+%     imagesc(reshape(invpsi(x),params.imsize)); axis image;
+%     axis image;
+%     colormap(gray);
 end
 
 % Finishing
