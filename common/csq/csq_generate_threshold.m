@@ -17,6 +17,6 @@ switch name
                                                            params.windowsize,...
                                                            params.end_level));
     otherwise
-        return_str = sprintf('Threshold "%s" is unsupported.',xform);
+        return_str = sprintf('Threshold "%s" is unsupported.',name);
         error('csq_generate_threshold:UnsupportedTransform',return_str);
 end
