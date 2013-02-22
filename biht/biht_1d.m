@@ -124,7 +124,7 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     xprev = x;
     
     % Gradient
-    g = AT(y - A(x));
+    g = AT(y - sign(A(x)));
     
     % Step
     r = x + (1/M) .* g;
