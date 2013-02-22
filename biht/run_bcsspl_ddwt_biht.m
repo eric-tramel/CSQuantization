@@ -31,7 +31,7 @@ psnr = PSNR(reconstructed_image, original_image);
 function reconstructed_image = ...
   BCS_SPL_DDWT_Decoder_1bit(y, Phi, num_rows, num_cols, num_levels, max_iterations)
 
-lambda = 100;
+lambda = 1;
 
 if (nargin < 6)
   max_iterations = 200;
@@ -49,15 +49,19 @@ end
 N = size(Phi,2);
 block_size = sqrt(N);
 
-TOL = 0.01;
+TOL = 0.000001;
 D_prev = 0;
 
-x = Phi' * y;
-% x = zeros(size(Phi,2),size(y,2));
+% x = Phi' * y;
+x = zeros(size(Phi,2),size(y,2));
 
+alpha = norm(Phi'*Phi); % maximum singluar value
+
+% alpha = 1./eye(size(Phi,1),size(Phi,2)).*norm(Phi(1,:));
+% alpha = ((Phi*Phi')\Phi)';
 num_factor = 1;
 for i = 1:max_iterations
-  [x D] = SPLIteration(y, x, Phi, block_size, num_rows, num_cols, ...
+  [x D] = SPLIteration(y, x, alpha, Phi, block_size, num_rows, num_cols, ...
       lambda, num_levels);
 
     if ((D_prev ~= 0) && (abs(D - D_prev) < TOL))
@@ -78,15 +82,17 @@ reconstructed_image = col2im(x, [block_size block_size], ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [x D] = SPLIteration(y, x, Phi, block_size, num_rows, num_cols, ...
+function [x D] = SPLIteration(y, x, alpha, Phi, block_size, num_rows, num_cols, ...
   lambda, num_levels)
 global original_image
 
 [Faf, Fsf] = AntonB;
 [af, sf] = dualfilt1;
 
- x = x + Phi' * (y - sign(Phi * x));
-x_hat = x + Phi' * (y - sign(Phi * x));
+%  x = x + Phi' * (y - sign(Phi * x));
+%  x_hat = x + Phi' * (y - sign(Phi * x));
+x_hat = x + 1./alpha.*Phi' * (y - sign(Phi * x));
+% x_hat = x + alpha* (y - sign(Phi * x));
 
 x1 = col2im(x_hat, [block_size block_size], ...
   [num_rows num_cols], 'distinct');
