@@ -113,21 +113,52 @@ case 'srm-blk'
 	end
 
 case 'srm-fft'
-	rand_vect = randperm(N)';
-	select_vect = randperm(round(N/2)-1)+1;
-	select_vect = select_vect(1:round(M/2))';
-	Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
-	PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
+    Mleft = M;
+    i = 1;
+    while Mleft >= N
+        thisM = N - 1;
+        rand_vect = randperm(N)';
+        select_vect = randperm(round(N/2)-1)+1;
+        select_vect = select_vect(1:round(thisM/2))';
+        Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
+        PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
 
-	if block_mode
-        A = @(z) vectorize( batch_projection(Phi,...
-                                             im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                             M,Nb)) ;
-        AT = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[M Nb]),N,Nb),block_dim,imsize,'distinct'));
-	else
-		A = Phi;
-		AT = PhiT;
-	end
+        if block_mode
+            B{i} = @(z) vectorize( batch_projection(Phi,...
+                                                 im2col(reshape(z,imsize),block_dim,'distinct'),...
+                                                 thisM,Nb)) ;
+            BT{i} = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[thisM Nb]),N,Nb),block_dim,imsize,'distinct'));
+        else
+            B{i} = Phi;
+            BT{i} = PhiT;
+        end
+        i = i + 1;
+        Mleft = Mleft - (N - 1);
+    end
+
+    % Now, we should have some left over measurements, perhaps
+    if Mleft ~= 0
+        thisM = Mleft;
+        rand_vect = randperm(N)';
+        select_vect = randperm(round(N/2)-1)+1;
+        select_vect = select_vect(1:round(thisM/2))';
+        Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
+        PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
+
+        if block_mode
+            B{i} = @(z) vectorize( batch_projection(Phi,...
+                                        im2col(reshape(z,imsize),block_dim,'distinct'),...
+                                        thisM,Nb)) ;
+            BT{i} = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[thisM Nb]),N,Nb),block_dim,imsize,'distinct'));
+        else
+            B{i} = Phi;
+            BT{i} = PhiT;
+        end
+    end
+
+    % Finally, bring these distinct projections together to act as one
+    A = @(z) srm_batch(B,z);
+    AT = @(z) srm_batch(BT,z);
 
 case 'gaussian'
     if M <= N
