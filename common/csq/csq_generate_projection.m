@@ -154,13 +154,19 @@ otherwise
 end	
 
 
-
 %----------------------------------------------------
 function y = batch_projection(A,x,M,B)
 	y = zeros(M,B);
 	for i=1:B
 		y(:,i) = A(x(:,i));
     end
-    
+
+function y = srm_batch(A,x)
+    % Assuming A is a cell array
+    y = [];
+    for i=1:length(A)
+        y = vertcat(y,A{i}(x));
+    end
+
 function v = vectorize(y)
 	v = y(:);
