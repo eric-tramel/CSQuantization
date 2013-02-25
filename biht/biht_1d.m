@@ -159,7 +159,7 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
 %     end
 %     subplot(L+1,1,L+1);
 %     imagesc(abs(W{L+1})); axis image;
-%  
+ 
 %     figure(2);
 %     subplot(1,2,1);
 %     imagesc(reshape(invpsi(x),params.imsize));
