@@ -58,7 +58,9 @@ for i=1:nargin
         % Top level directories
         case 'biht'
             addpath([repo_dir '/biht']);
-        
+        case 'proj'
+            addpath([repo_dir '/projections']);
+
         otherwise
             return_str = sprintf('Unknown dependency: %s',varargin{i});
             warning('csq_deps:Uknown',return_str);

@@ -13,6 +13,16 @@
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
 		},
 		{
+			"path": "projections",
+			"name": "Projections",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
+			"path": "biht",
+			"name": "1-Bit CS",
+			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+		},
+		{
 			"path": "examples",
 			"name": "Examples",
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
@@ -30,11 +40,6 @@
 		{
 			"path": "common/image",
 			"name": "[Tools] Image",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
-		},
-		{
-			"path": "biht",
-			"name": "1-Bit CS",
 			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
 		}
 	]

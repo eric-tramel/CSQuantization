@@ -20,7 +20,12 @@ function [A AT] = csq_generate_projection(proj_name,params)
 
 %% Variables
 block_mode = 0;
-rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
+
+if csq_in_octave
+    rand_seed = time; % Current UTC in seconds.
+else
+    rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
+end
 
 %% Input checking
 csq_required_parameters(params,'subrate');
@@ -90,75 +95,22 @@ end
 M = round(subrate*N);
 
 % Set the RNG seed
-s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
-RandStream.setDefaultStream(s);
+if csq_in_octave
+    rand('state',mod(rand_seed,2^32));
+    randn('state',mod(rand_seed,2^32));
+else
+    s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
+    RandStream.setDefaultStream(s);
+end
 
 switch proj_name
 case 'srm-blk'
-	csq_required_parameters(params,'blksize','trans_mode');
-	rand_vect = randperm(N)';
-	select_vect = randperm(N);
-	select_vect = select_vect(1:M);
-	Phi   = @(z) blk_f1d(z,select_vect,rand_vect,params.trans_mode,params.blksize);
-	PhiT= @(z) blk_t1d(z,N,select_vect,rand_vect,params.trans_mode,params.blksize);
-
-	if block_mode
-        A = @(z) vectorize( batch_projection(Phi,...
-                                             im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                             M,Nb)) ;
-        AT = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[M Nb]),N,Nb),block_dim,imsize,'distinct'));
-	else
-		A = Phi;
-		AT = PhiT;
-	end
+    csq_required_parameters(params,'blksize','trans_mode');
+    [A AT] = projection_srmblk(M,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim,Nb);
 
 case 'srm-fft'
-    Mleft = M;
-    i = 1;
-    while Mleft >= N
-        thisM = N - 1;
-        rand_vect = randperm(N)';
-        select_vect = randperm(round(N/2)-1)+1;
-        select_vect = select_vect(1:round(thisM/2))';
-        Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
-        PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
+    [A AT] = projection_srmfft(M,N,block_mode,imsize,block_dim,Nb);    
 
-        if block_mode
-            B{i} = @(z) vectorize( batch_projection(Phi,...
-                                                 im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                                 thisM,Nb)) ;
-            BT{i} = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[thisM Nb]),N,Nb),block_dim,imsize,'distinct'));
-        else
-            B{i} = Phi;
-            BT{i} = PhiT;
-        end
-        i = i + 1;
-        Mleft = Mleft - (N - 1);
-    end
-
-    % Now, we should have some left over measurements, perhaps
-    if Mleft ~= 0
-        thisM = Mleft;
-        rand_vect = randperm(N)';
-        select_vect = randperm(round(N/2)-1)+1;
-        select_vect = select_vect(1:round(thisM/2))';
-        Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
-        PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
-
-        if block_mode
-            B{i} = @(z) vectorize( batch_projection(Phi,...
-                                        im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                        thisM,Nb)) ;
-            BT{i} = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[thisM Nb]),N,Nb),block_dim,imsize,'distinct'));
-        else
-            B{i} = Phi;
-            BT{i} = PhiT;
-        end
-    end
-
-    % Finally, bring these distinct projections together to act as one
-    A = @(z) srm_batch(B,z);
-    AT = @(z) srm_batch(BT,z);
 
 case 'gaussian'
     if M <= N
