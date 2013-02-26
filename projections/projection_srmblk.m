@@ -26,7 +26,11 @@ function [A AT B BT] = projection_srmblk(M,N,trans_mode,blksize,is_blocked,imsiz
 
 	% Set up transpose transform, need to rearrange y's to account
 	% To do this, we need to sum together all the individual projections
-	AT = @(z) srm_transpose_batch(BT,z,M*Nb,N*Nb,i);
+    if is_blocked
+        AT = @(z) srm_transpose_batch(BT,z,N*Nb,Nb,i,M./N);
+    else
+        AT = @(z) srm_transpose_batch(BT,z,N,1,i,M./N);
+    end
 
 
 %----------------------------------------------------
@@ -38,31 +42,41 @@ function [A AT] = single_projector_set(M,N,trans_mode,blksize,is_blocked,imsize,
 	PhiT  = @(z) blk_t1d(z,N,select_vect,rand_vect,trans_mode,blksize);
 
 	if is_blocked
-	    A = @(z) vectorize( batch_projection(Phi,...
-	                                 im2col(reshape(z,imsize),block_dim,'distinct'),...
-	                                 M,Nb)) ;
-	    AT = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[M Nb]),N,Nb),block_dim,imsize,'distinct'));
-	else
+        A = @(z) srm_forward(Phi,z,M,imsize,block_dim,Nb);
+        AT = @(z) srm_transpose(PhiT,z,M,N,block_dim,imsize,Nb);
+    else
 		A = Phi;
 		AT = PhiT;
-	end
+    end
 
+function y = srm_forward(Phi,x,M,imsize,block_dim,Nb)
+    y = reshape(x,imsize);
+    y = im2col(y,block_dim,'distinct');
+    y = batch_projection(Phi,y,M,Nb);
+    y = y(:);
 
+function x = srm_transpose(PhiT,y,M,N,block_dim,imsize,Nb)
+    x = reshape(y,[M,Nb]);
+    x = batch_projection(PhiT,x,N,Nb);
+    x = col2im(x,block_dim,imsize,'distinct');
+    x = x(:);
+    
 function y = batch_projection(A,x,M,B)
 	y = zeros(M,B);
-	for i=1:B
+    for i=1:B
 		y(:,i) = A(x(:,i));
     end
 
-function x = srm_transpose_batch(AT,y,M,N,num_projs)
+function x = srm_transpose_batch(AT,y,N,Nb,num_projs,rescale)
 	x = zeros(N,1);
 	i = 1;
 	while i < num_projs
-		x = x + AT{i}(y(1:(N-1)));
-		y = y(N:end);
+		x = x + AT{i}(y(1:(N-Nb)));
+		y = y((N-Nb+1):end);
 		i = i + 1;
 	end
 	x = x + AT{i}(y);
+    x = x ./ rescale;
 
 function y = srm_forward_batch(A,x)
     % Assuming A is a cell array
@@ -70,6 +84,3 @@ function y = srm_forward_batch(A,x)
     for i=1:length(A)
         y = vertcat(y,A{i}(x));
     end
-
-function v = vectorize(y)
-	v = y(:);

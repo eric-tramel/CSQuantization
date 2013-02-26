@@ -36,10 +36,10 @@ params.windowsize = 3;
 params.lambda = 50;
 params.k = round(0.1*params.N);
 % Projection parameters
-params.block_based = 0;
+params.block_based = 1;
 params.block_dim = [32 32];
 params.Nb = (imsize(1)./params.block_dim(1))*(imsize(2)./params.block_dim(2));
-params.subrate = 0.7;
+params.subrate = 2;
 M = round(params.subrate*N);
 params.M = M;
 % SRM specific parameters
@@ -61,7 +61,7 @@ top_threshold = csq_generate_threshold('top',params);
 
 
 %% Random Projection Function Handles
-[Phi Phi_t] = csq_generate_projection('srm-fft',params);
+[Phi Phi_t] = csq_generate_projection('gaussian',params);
 
 %% Unification
 [A AT] = csq_unify_projection(Phi,Phi_t,psi,invpsi);

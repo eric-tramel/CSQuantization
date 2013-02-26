@@ -20,6 +20,9 @@ function [A AT] = csq_generate_projection(proj_name,params)
 
 %% Variables
 block_mode = 0;
+Nb = 0;
+block_dim = [];
+imsize = [];
 
 if csq_in_octave
     rand_seed = time; % Current UTC in seconds.
@@ -108,8 +111,8 @@ case 'srm-blk'
     csq_required_parameters(params,'blksize','trans_mode');
     [A AT] = projection_srmblk(M,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim,Nb);
 
-case 'srm-fft'
-    [A AT] = projection_srmfft(M,N,block_mode,imsize,block_dim,Nb);    
+% case 'srm-fft'
+%     [A AT] = projection_srmfft(M,N,block_mode,imsize,block_dim,Nb);    
 
 
 case 'gaussian'
