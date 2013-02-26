@@ -58,6 +58,8 @@ for i=1:nargin
         % Top level directories
         case 'biht'
             addpath([repo_dir '/biht']);
+        case 'experiments'
+            addpath([repo_dir '/experiments']);
         
         otherwise
             return_str = sprintf('Unknown dependency: %s',varargin{i});

@@ -1,4 +1,4 @@
-function x = biht_1d(y,Ain,params)
+function [x iters] = biht_1d(y,Ain,params)
 % biht_1d(y,Phi,params)
 % Code to implement the basic 1D functionality of the the
 % 1-Bit CS recovery procedure: Binary Iterated Hard Thresholding.
@@ -130,7 +130,7 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     r = x + (1/M) .* g;
     
     % Update 
-    x = params.smoothing(x);
+    r = params.smoothing(r);
     x = threshold(r); 
     
     % Normalize
@@ -174,6 +174,7 @@ end
 % Finishing
 x = invpsi(x);
 x = x ./ norm(x); 
+iters = iter - 1;
 
 if verbose
     csq_printf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
