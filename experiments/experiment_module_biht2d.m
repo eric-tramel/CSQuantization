@@ -19,10 +19,13 @@ params.smoothing = @(z) z;
 if params.block_based
     csq_required_parameters(params,'block_dim');
     % Determine the number of blocks in the image
-    params.Nb = (imsize(1)./params.block_dim(1))*(imsize(2)./params.block_dim(2));
-    % Set smoothing function
-    blockN = params.block_dim(1)*params.block_dim(2);
-    params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+    params.Nb = (params.imsize(1)./params.block_dim(1))*(params.imsize(2)./params.block_dim(2));
+    
+    % WARING: For some reason smoothing seems to be causing significant
+    % recovery problems. So I'm just removing it for now.
+%     % Set smoothing function
+%     blockN = params.block_dim(1)*params.block_dim(2);
+%     params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
 end
 
 switch params.threshold
