@@ -1,4 +1,4 @@
-function results = experiment_module_biht2d(X,target_bitrate,params)
+function [XF results] = experiment_module_biht2d(X,target_bitrate,params)
 % function results = experiment_module_biht2d
 %
 % CSQ Experimental Module for BIHT-2D. For more information regarding the
@@ -76,7 +76,7 @@ y = sign(Phi(xn));
 
 % Recovery
 tic 
-    XF = biht_1d(y,A,params);
+    [XF iterations] = biht_1d(y,A,params);
 results.run_time = toc;
 
 % Adding the mean back
@@ -85,14 +85,17 @@ XF = XF + xmean;
 % Returning the energy
 XF = XF .* Xeng;
 
+% Reshape
+XF = reshape(XF,params.imsize);
+
 %% Finishing
 % Outputs
+results.iterations = iterations;
 results.params = params;
 results.Phi = Phi;
 results.Phi_t = Phi_t;
 results.Psi = Psi;
 results.Psi_t = Psi_t;
-results.XF = reshape(XF,params.imsize);
 results.true_bitrate = length(y) ./ params.N;
 results.target_bitrate = target_bitrate;
 

@@ -27,7 +27,7 @@ function [x iters] = biht_1d(y,Ain,params)
 htol = 0;
 maxIter = 1000;
 verbose = 0;
-conv = 1e-10;
+conv = 1e-9;
 
 % Flags
 FLAG_Nspecified = 0;
@@ -160,15 +160,15 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
 %     subplot(L+1,1,L+1);
 %     imagesc(abs(W{L+1})); axis image;
  
-%     figure(2);
-%     subplot(1,2,1);
-%     imagesc(reshape(invpsi(x),params.imsize));
-%     axis image;
-%     subplot(1,2,2);
-%     imagesc(reshape(abs(invpsi(g)),params.imsize));
-%     axis image;
-%     colormap(gray);
-%     refresh;
+    figure(2);
+    subplot(1,2,1);
+    imagesc(reshape(invpsi(x),params.imsize));
+    axis image;
+    subplot(1,2,2);
+    imagesc(reshape(abs(invpsi(g)),params.imsize));
+    axis image;
+    colormap(gray);
+    refresh;
 end
 
 % Finishing
