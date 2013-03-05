@@ -123,20 +123,17 @@ hiter = Inf;
 iter = 0;
 conv_check = Inf;
 M = length(y);
+update = @(z) update_step(z,y,A,AT,M)
 
 % Main Recovery Loop
 while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     % Convergence checking
     xprev = x;
     
-    % Gradient
-    g = AT(y - A(x));    % Sign quantization already included in A earlier
-    
-    % Step
-    r = x + (1/M) .* g;
-    
-    % Update 
+    r = update(x);
     r = psi(params.smoothing(invpsi(r)));
+    
+    r = update(r);
     x = threshold(r); 
     
     % Normalize
@@ -146,35 +143,12 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     hiter = nnz(y - A(x));
     
     if verbose
-        csq_printf('[biht_1d.m] Iter %d: \\delta = %f, hiter = %d, ||g||_2 = %f.\n',iter,nnz(x)./N,hiter,norm(g));
+        csq_printf('[biht_1d.m] Iter %d: \\delta = %f, hiter = %d, ||x-xs||_2 = %f.\n',iter,nnz(x)./N,hiter,norm(x - xprev));
     end
     
     iter = iter + 1;
 
     conv_check = norm(x-xprev)./N;
-    
-    %% Debug code for the two-dimensional case
-%     figure(1);
-%     plot(abs(x)); axis tight; grid on; box on;
-%     figure(1);
-%     L = params.L;
-%     for l=1:L
-%         W = csq_dwt_vec2cell(x,params.imsize(1),params.imsize(2),L);
-%         subplot(L+1,1,l);
-%         imagesc(abs(cell2mat(W{l}))); colormap(jet); axis image;
-%     end
-%     subplot(L+1,1,L+1);
-%     imagesc(abs(W{L+1})); axis image;
- 
-    figure(2);
-    subplot(1,2,1);
-    imagesc(reshape(invpsi(x),params.imsize));
-    axis image;
-    subplot(1,2,2);
-    imagesc(reshape(abs(invpsi(g)),params.imsize));
-    axis image;
-    colormap(gray);
-    refresh;
 end
 
 % Finishing
@@ -185,6 +159,14 @@ iters = iter - 1;
 if verbose
     csq_printf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
 end
+
+
+function r  = update_step(x,y,A,AT,M)
+    % Gradient
+    g = AT(y - A(x));    % Sign quantization already included in A earlier
+    
+    % Step
+    r = x + (1/M) .* g;
 
 
 

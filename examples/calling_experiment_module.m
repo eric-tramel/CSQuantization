@@ -2,7 +2,6 @@
 % 
 % Demonstrates how to call the experiment modules.
 clear
-
 csq_deps('srm','wavelet','common','experiments','biht');
 
 X = csq_load_data('image','lena.jpg');
@@ -13,12 +12,13 @@ params.block_dim = [32 32];                     % Block acq. dimensions
 params.htol = 0;                                % Maximum hamming error
 params.maxIter = 200;                          % Recovery iterations
 params.threshold = 'bivariate-shrinkage';       % Set threshold type
-params.lambda = 50;                             % Required B-S parameter
+params.lambda = 0.1;                             % Required B-S parameter
 params.xform = 'dwt2d';                         % Sparse Transform
-params.projection = 'srm-blk';                  % Projection type
+params.projection = 'gaussian';                  % Projection type
 params.blksize = 32;                            % Req. SRM parameter
 params.trans_mode = 'BWHT';                     % Req. SRM parameter
 params.verbose = 1;
+params.k = round(0.05*512*512);
 
 target_bitrate = 0.75;
 

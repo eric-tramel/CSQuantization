@@ -25,7 +25,8 @@ if params.block_based
     % recovery problems. So I'm just removing it for now.
 %     % Set smoothing function
     blockN = params.block_dim(1)*params.block_dim(2);
-    params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+    % params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+    params.smoothing = @(z) csq_vectorize( wiener2(reshape(z,params.imsize),[3 3]) );
 end
 
 switch params.threshold
