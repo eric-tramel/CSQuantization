@@ -54,6 +54,8 @@ for i=1:nargin
             addpath([repo_dir '/toolboxes/MessagePassingAlgorithms/QuantizedRelaxedBeliefPropagation']);
         case 'biht-aop'
             addpath([repo_dir '/toolboxes/AOP1BCSv1']);
+        case 'inpaint'
+            addpath([repo_dir '/toolboxes/Inpaint_nans']);
             
         % Top level directories
         case 'biht'
