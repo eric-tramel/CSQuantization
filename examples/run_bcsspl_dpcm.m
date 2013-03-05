@@ -4,7 +4,7 @@
 
 %% Set dependencies
 clear
-csq_deps('common','biht','wavelet','srm','ssim','bcs-spl-dpcm');
+csq_deps('common','wavelet','ssim','bcs-spl-dpcm');
 
 %% Load in data
 X = csq_load_data('image','lena.jpg');
@@ -45,7 +45,7 @@ params.subrate = 0.3;
 M = round(params.subrate*params.Nb);
 params.M = M;
 % Recovery parameters
-params.tol = 0;
+params.tol = 0.0001;
 params.maxIter = 200;
 params.verbose = 1;
 % Side parameters
