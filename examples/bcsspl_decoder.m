@@ -28,15 +28,24 @@ x = Phi_t(y);
 D_prev = 0;
 for i = 1:max_iterations
   
-    x_hat = params.smoothing(x);
+%     x_hat = params.smoothing(x);
+% x = col2im(x, params.block_dim , params.imsize, 'distinct'); 
+x = reshape(x, params.imsize);
+x_hat = wiener2(x, [3, 3]);
+% x_hat = vectorize(im2col(x_hat, params.block_dim, 'distinct'));
+% x_hat = vectorize(x_hat);
+x_hat = x_hat(:);
+    
+
     x_hat = x_hat + Phi_t((y - Phi(x_hat)));
 %     x_hat = x_hat + A_t(y - A(x_hat));
     x_check = Psi(x_hat);
     x_check = params.threshold(x_check);
+%     x_check = Psi(params.threshold(Psi_t(x_hat)));
     x_bar = Psi_t(x_check);
     x = x_bar + Phi_t ((y - Phi(x_bar)));
-%     x = x_bar + A_t(y-A(x_bar));
-    D = RMS(x_hat, x)
+%     x = x_check + A_t(y-A(x_check));
+    D = RMS(x_hat, x);
     
   if ((D_prev ~= 0) && (abs(D - D_prev) < TOL))
     break;
@@ -54,3 +63,30 @@ x_bar = Psi_t(x_check);
 x = x_bar + Phi_t ((y - Phi(x_bar)));
 
 reconstructed_image = reshape(x,params.imsize);
+
+
+function x_check = SPLBivariateShrinkage(x_check, end_level, lambda)
+
+windowsize  = 3;
+windowfilt = ones(1, windowsize)/windowsize;
+
+tmp = x_check{1}{3};
+Nsig = median(abs(tmp(:)))/0.6745;
+
+for scale = 1:end_level
+  for dir = 1:3
+    Y_coefficient = x_check{scale}{dir};
+    
+    Y_parent = x_check{scale+1}{dir};
+    
+    Y_parent = expand(Y_parent);
+    
+    Wsig = conv2(windowfilt, windowfilt, (Y_coefficient).^2, 'same');
+    Ssig = sqrt(max(Wsig-Nsig.^2, eps));
+    
+    T = sqrt(3)*Nsig^2./Ssig;
+    
+    x_check{scale}{dir} = bishrink(Y_coefficient, ...
+	Y_parent, T*lambda);
+  end
+end

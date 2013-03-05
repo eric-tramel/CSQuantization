@@ -58,9 +58,7 @@ params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN p
 bs_threshold = csq_generate_threshold('bivariate-shrinkage',params);
 % top_threshold = csq_generate_threshold('top',params);
 
-
-s = RandStream('mcg16807','Seed',0);
-RandStream.setDefaultStream(s);
+randn('seed',0);
 %% Random Projection Function Handles
 [Phi Phi_t] = csq_generate_projection('gaussian',params);
 
@@ -84,7 +82,7 @@ params.Phi_t = Phi_t;
 
 % BIHT Recovery
 tic
-xhat = bcsspl_decoder(yq,A,params);
+xhat = bcsspl_decoder(y,A,params);
 biht_time = toc;
 
 %% Attempt Rescaling
