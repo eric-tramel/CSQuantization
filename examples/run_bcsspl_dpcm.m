@@ -50,7 +50,7 @@ params.maxIter = 200;
 params.verbose = 1;
 % Side parameters
 blockN = params.block_dim(1)*params.block_dim(2);
-params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+params.smoothing = @(z) csq_vectorize(wiener2(reshape(z,imsize),[3 3]));
 
 
 %% Sparse Transform Function Handles

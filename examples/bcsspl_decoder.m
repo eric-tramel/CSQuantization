@@ -28,7 +28,7 @@ x = Phi_t(y);
 D_prev = 0;
 for i = 1:max_iterations
   
-%     x_hat = params.smoothing(x);
+    x_hat = params.smoothing(x);
 % x = col2im(x, params.block_dim , params.imsize, 'distinct'); 
 x = reshape(x, params.imsize);
 x_hat = wiener2(x, [3, 3]);
