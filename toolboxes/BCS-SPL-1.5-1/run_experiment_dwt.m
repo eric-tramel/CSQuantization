@@ -31,12 +31,12 @@
 
 
 function psnr = run_experiment_dwt()
-
+addpath(genpath('C:\Dropbox\work\Common\Sequences'));
 filename = 'lenna';
 % filename = 'barbara';
 % filename = 'goldhill';
 
-num_trials = 5;
+num_trials = 1;
 subrate = 0.3;
 block_size = 32;
 num_levels = 5;
