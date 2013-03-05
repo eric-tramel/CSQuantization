@@ -12,7 +12,10 @@ csq_required_parameters(params,'htol','maxIter','threshold',...
 % Assume X is coming in as an image matrix
 params.imsize = size(X);
 params.N = length(X(:));
-params.L = log2(min(params.imsize))-1;     % Wavelet decomposition levels
+% Set wavelet decomposition levels
+if ~isfield(params,'L')
+    params.L = log2(min(params.imsize))-1;     % Wavelet decomposition levels
+end
 params.smoothing = @(z) z;
 
 % Some input checking for different experiment modes
@@ -26,7 +29,8 @@ if params.block_based
 %     % Set smoothing function
     blockN = params.block_dim(1)*params.block_dim(2);
     % params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
-    params.smoothing = @(z) csq_vectorize( wiener2(reshape(z,params.imsize),[3 3]) );
+    % params.smoothing = @(z) csq_vectorize( wiener2(reshape(z,params.imsize),[3 3]) );
+    params.smoothing = @(z) csq_vectorize( deblocking_filter( reshape(z,params.imsize),params.block_dim,2) );
 end
 
 switch params.threshold

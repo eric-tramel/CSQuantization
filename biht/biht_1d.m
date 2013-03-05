@@ -135,6 +135,11 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     
     r = update(r);
     x = threshold(r); 
+
+        %%%% DEBUG  
+        figure(1);
+        imagesc(reshape(invpsi(x),params.imsize)); axis image;
+        refresh;
     
     % Normalize
     x = x ./ norm(x);
