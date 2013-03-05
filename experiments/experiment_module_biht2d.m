@@ -24,8 +24,8 @@ if params.block_based
     % WARING: For some reason smoothing seems to be causing significant
     % recovery problems. So I'm just removing it for now.
 %     % Set smoothing function
-%     blockN = params.block_dim(1)*params.block_dim(2);
-%     params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+    blockN = params.block_dim(1)*params.block_dim(2);
+    params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
 end
 
 switch params.threshold
@@ -63,6 +63,7 @@ params.threshold = csq_generate_threshold(params.threshold,params);
 % BIHT Recovery parameters
 params.ATrans = AT;
 params.invpsi = Psi_t;
+params.psi = Psi;
 
 %% Experiment
 % Normalization and mean subtraction

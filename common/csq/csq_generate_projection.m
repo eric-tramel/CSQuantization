@@ -20,7 +20,9 @@ function [A AT] = csq_generate_projection(proj_name,params)
 
 %% Variables
 block_mode = 0;
-rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
+%%% Disabling seed support for octave compatability
+%rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
+rand_seed = 1;
 
 %% Input checking
 csq_required_parameters(params,'subrate');
@@ -89,9 +91,10 @@ end
 % Get the number of measurements
 M = round(subrate*N);
 
+%%% Disabling seed support for octave compatability
 % Set the RNG seed
-s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
-RandStream.setDefaultStream(s);
+% s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
+% RandStream.setDefaultStream(s);
 
 switch proj_name
 case 'srm-blk'
