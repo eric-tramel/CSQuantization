@@ -75,6 +75,12 @@ else
     invpsi = @(x) x;
 end
 
+if isfield(params,'psi')
+    psi = params.psi;
+else
+    psi = @(x) x;
+end
+
 
 %% Input handling
 if isa(Ain,'function_handle')
@@ -130,7 +136,7 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     r = x + (1/M) .* g;
     
     % Update 
-    r = params.smoothing(r);
+    r = psi(params.smoothing(invpsi(r)));
     x = threshold(r); 
     
     % Normalize
