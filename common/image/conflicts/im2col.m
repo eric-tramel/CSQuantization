@@ -47,15 +47,18 @@ if strcmp(kind, 'distinct')
     [m,n] = size(a);
     mpad = rem(m,block(1)); if mpad>0, mpad = block(1)-mpad; end
     npad = rem(n,block(2)); if npad>0, npad = block(2)-npad; end
-    aa = mkconstarray(class(a), padval, [m+mpad n+npad]);
+%     aa = mkconstarray(class(a), padval, [m+mpad n+npad]);
+    aa = repmat(feval(class(a),padval),[m+mpad n+npad]);
     aa(1:m,1:n) = a;
     
     [m,n] = size(aa);
     mblocks = m/block(1);
     nblocks = n/block(2);
     
-    b = mkconstarray(class(a), 0, [prod(block) mblocks*nblocks]);
-    x = mkconstarray(class(a), 0, [prod(block) 1]);
+%     b = mkconstarray(class(a), 0, [prod(block) mblocks*nblocks]);
+    b = repmat(feval(class(a),0),[prod(block) mblocks*nblocks]);
+%     x = mkconstarray(class(a), 0, [prod(block) 1]);
+    x = repmat(feval(class(a),0),[prod(block) 1]);
     rows = 1:block(1); cols = 1:block(2);
     for i=0:mblocks-1,
         for j=0:nblocks-1,
@@ -78,7 +81,7 @@ elseif strcmp(kind,'sliding')
     cidx = (0:mc-1)'; ridx = 1:nc;
     t = cidx(:,ones(nc,1)) + ridx(ones(mc,1),:);    % Hankel Subscripts
     tt = zeros(mc*n,nc);
-    rows = [1:mc];
+    rows = 1:mc;
     for i=0:n-1,
         tt(i*mc+rows,:) = t+ma*i;
     end
@@ -101,7 +104,7 @@ end
 %%%
 function [a, block, kind, padval] = parse_inputs(varargin)
 
-checknargin(2,4,nargin,mfilename);
+% checknargin(2,4,nargin,mfilename);
 
 switch nargin
 case 2
@@ -128,7 +131,8 @@ case 3
         % IM2COL(A, [M N], 'kind')
         a = varargin{1};
         block = varargin{2};
-        kind = checkstrs(varargin{3},{'sliding','distinct'},mfilename,'kind',3);
+%         kind = checkstrs(varargin{3},{'sliding','distinct'},mfilename,'kind',3);
+        kind = varargin{3};
         padval = 0;
     end
     
@@ -136,11 +140,13 @@ case 4
     % IM2COL(A, 'indexed', [M N], 'kind')
     a = varargin{1};
     block = varargin{3};
-    kind = checkstrs(varargin{4},{'sliding','distinct'},mfilename,'kind',4);
+%     kind = checkstrs(varargin{4},{'sliding','distinct'},mfilename,'kind',4);
+    kind = varargin{4};
     padval = 1;
     
 end
 
-if (isa(a,'uint8') | isa(a, 'uint16'))
+if (isa(a,'uint8') || isa(a, 'uint16'))
     padval = 0;
 end
+

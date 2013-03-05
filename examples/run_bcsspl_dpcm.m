@@ -59,6 +59,8 @@ bs_threshold = csq_generate_threshold('bivariate-shrinkage',params);
 % top_threshold = csq_generate_threshold('top',params);
 
 
+s = RandStream('mcg16807','Seed',0);
+RandStream.setDefaultStream(s);
 %% Random Projection Function Handles
 [Phi Phi_t] = csq_generate_projection('gaussian',params);
 

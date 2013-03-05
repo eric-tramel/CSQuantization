@@ -174,8 +174,10 @@ f = max(1,round(min(M,N)/256));
 if(f>1)
     lpf = ones(f,f);
     lpf = lpf/sum(lpf(:));
-    img1 = imfilter(img1,lpf,'symmetric','same');
-    img2 = imfilter(img2,lpf,'symmetric','same');
+    img1 = filter2(lpf, img1,'same');
+    img2 = filter2(lpf, img2,'same');
+%     img1 = imfilter(img1,lpf,'symmetric','same');
+%     img2 = imfilter(img2,lpf,'symmetric','same');
 
     img1 = img1(1:f:end,1:f:end);
     img2 = img2(1:f:end,1:f:end);
@@ -208,6 +210,6 @@ else
    ssim_map(index) = numerator1(index)./denominator1(index);
 end
 
-mssim = mean2(ssim_map);
+mssim = mean(ssim_map(:));
 
 return

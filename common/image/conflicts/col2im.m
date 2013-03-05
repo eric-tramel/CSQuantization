@@ -32,10 +32,10 @@ function a = col2im(b,block,mat,kind)
 %   OUT 
 %      A          - same class as B
 
-checknargin(3,4,nargin,mfilename);
-checkinput(b,{'numeric' 'logical'},{'nonsparse'},mfilename,'B',1);
-checkinput(block,{'double'},{'integer' 'real' 'positive'},mfilename,'[M N]',2);
-checkinput(mat,{'double'},{'integer' 'real' 'positive'},mfilename,'[MM NN]',3);
+% checknargin(3,4,nargin,mfilename);
+% checkinput(b,{'numeric' 'logical'},{'nonsparse'},mfilename,'B',1);
+% checkinput(block,{'double'},{'integer' 'real' 'positive'},mfilename,'[M N]',2);
+% checkinput(mat,{'double'},{'integer' 'real' 'positive'},mfilename,'[MM NN]',3);
 
 if nargin < 4,          % Try to determine which block type is assumed.
   kind = 'sliding';
@@ -63,8 +63,10 @@ if kind(1)=='d', % Distinct
   
   mblocks = mpad/block(1);
   nblocks = npad/block(2);
-  aa = mkconstarray(class(b), 0, [mpad npad]);
-  x = mkconstarray(class(b), 0, block);
+%   aa = mkconstarray(class(b), 0, [mpad npad]);
+  aa = repmat(feval(class(b),0),[mpad npad]);
+%   x = mkconstarray(class(b), 0, block);
+  x = repmat(feval(class(b),0), block);
   rows = 1:block(1); cols = 1:block(2);
   for i=0:mblocks-1,
     for j=0:nblocks-1,
