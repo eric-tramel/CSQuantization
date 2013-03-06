@@ -7,7 +7,7 @@ clear
 csq_deps('common','wavelet','ssim','bcs-spl-dpcm');
 
 %% Load in data
-X = csq_load_data('image','lena.jpg');
+X = csq_load_data('image','barbara.jpg');
 % X = X(129:384,129:384);
 imsize = size(X);
 x = X(:);
@@ -16,6 +16,8 @@ x = X(:);
 % type = 'ddwt2d';
 type = 'dct2d-blk';
 
+quant = 'sq';
+quant = 'dpcm';
 
 % Mean subtraction
 % Xmu = mean(x);
@@ -78,8 +80,16 @@ end
 %% Acquisition
 y = Phi(x);
 B = 5;
-[yq rate] = DPCM_Coding(y, B, imsize(1),imsize(2));
 
+switch quant 
+  case 'sq'
+    [yq rate] = SQ_Coding(y, B, imsize(1),imsize(2));
+  case 'dpcm'   
+    [yq rate] = DPCM_Coding(y, B, imsize(1),imsize(2));
+  otherwise
+    yq = y;
+    rate = 0;
+end
 %% Recovery
 % Recovery parameters
 params.AT = AT;
