@@ -36,13 +36,14 @@
 function Psi = DCT2D_Matrix(N)
 
 Psi = zeros(N * N, N * N);
-
+X = zeros(N, N);
+D = dctmtx(N);
 for row = 1:N
   for col = 1:N
-    X = zeros(N, N);
     X(row, col) = 1;
-    x = idct2(X);
+    x = D*X*D';
     Psi(:, (row - 1) * N + col) = x(:);
+    X(row, col) = 0;
   end
 end
 

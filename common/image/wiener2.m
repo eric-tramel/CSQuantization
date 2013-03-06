@@ -1,6 +1,6 @@
 function f = wiener2(x, nhood)
 % Wiener -- Wiener filter for 2D images variance is calculated using local
-% mean and variance
+% mean and variance. Symetric extention is used for the boundary.
 % Usage
 %   f = Wiener2(x,nhood)
 % Inputs
@@ -9,7 +9,9 @@ function f = wiener2(x, nhood)
 % Outputs
 %   f		    denoised image
 %
-
+if (nhood(1) ~= 3) || (nhood(2) ~= 3)
+  error('only support [3 3] for now');
+end
 % symetric extension 1 pixel around the boundary
 x = symextend(x,1);
 

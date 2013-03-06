@@ -1,4 +1,4 @@
-% This code demonstrates the usage of the BIHT code for a trivial one
+% This code demonstrates the usage of the bcsspl code for a trivial one
 % dimensional signal recovery. This script additionally demonstrates the
 % usage of the csq_ glue functions.
 
@@ -8,18 +8,14 @@ csq_deps('common','wavelet','ssim','bcs-spl-dpcm');
 
 %% Load in data
 X = csq_load_data('image','lena.jpg');
+% X = X(129:384,129:384);
 imsize = size(X);
-% N = imsize(1)*imsize(2);
-
-%% Pre-processing
-% Normalization
-% X = X./norm(X(:));
-
-% Dynamic Range
-% Xrange = [min(X(:)); max(X(:))];
-
-% Rasterization
 x = X(:);
+
+% type = 'dwt2d';
+% type = 'ddwt2d';
+type = 'dct2d-blk';
+
 
 % Mean subtraction
 % Xmu = mean(x);
@@ -27,43 +23,57 @@ Xmu = 0;
 x = x - Xmu;
 
 %% Experiment Parameters
-% Set up wavelet transform
-% params.L = log2(min(imsize))-1; % Maximum decomposition
-params.L = 5;
 params.imsize = imsize;
-% params.N = N;
-% Additional parameters for bivariate shrinkage
-params.end_level = params.L - 1;
-params.windowsize = 3;
-params.lambda = 20;
-% params.k = round(0.1*params.N);
+
 % Projection parameters
 params.block_based = 1;
-params.block_dim = [32 32];
+params.block_dim = [8 8];
 params.Nb = round(prod(imsize)/prod(params.block_dim));
-params.subrate = 0.3;
+
+params.subrate = 0.25;
 M = round(params.subrate*params.Nb);
 params.M = M;
+
 % Recovery parameters
 params.tol = 0.0001;
-params.maxIter = 200;
+params.maxIter = 400;
 params.verbose = 1;
-% Side parameters
-blockN = params.block_dim(1)*params.block_dim(2);
+params.randseed = 0;
+params.original_image = x;
+
 params.smoothing = @(z) csq_vectorize(wiener2(reshape(z,imsize),[3 3]));
 
 
-%% Sparse Transform Function Handles
-[psi invpsi] = csq_generate_xform('dwt2d',params);
-bs_threshold = csq_generate_threshold('bivariate-shrinkage',params);
-% top_threshold = csq_generate_threshold('top',params);
+% paramteres for wavelets
+params.L = log2(min(imsize)) - 3; % max L - 3 produces the best
+params.end_level = params.L - 1;
+params.windowsize = 3;
+params.lambda = 10; %ddwt and dwt
 
-randn('seed',0);
-%% Random Projection Function Handles
-[Phi Phi_t] = csq_generate_projection('gaussian',params);
+switch type
+  case 'dct2d-blk'
+    params.lambda = 0.3; % 0.8 with block size [8 8] hard thresholding gives good results
+                        % 0.3 with block size [8 8] soft thresholding gives good results
+    params.threshold = csq_generate_threshold('soft',params);
+    params.threshold_final = csq_generate_threshold('soft',params);
+  case 'dwt2d'
+      params.threshold = csq_generate_threshold('bivariate-shrinkage',params);
+      params.threshold_final = csq_generate_threshold('bivariate-shrinkage-final',params);
+  case 'ddwt2d'
+    params.threshold = csq_generate_threshold('ddwt-bs',params);
+    params.threshold_final = csq_generate_threshold('ddwt-bs-final',params);
+   
+  otherwise
+    error('unknown type');
+end
 
-%% Unification
-[A AT] = csq_unify_projection(Phi,Phi_t,psi,invpsi);
+[Psi PsiT] = csq_generate_xform(type,params);
+
+% randn('seed',0);
+[Phi PhiT] = csq_generate_projection('gaussian',params);
+
+%% Unification of Phi and Psi
+[A AT] = csq_unify_projection(Phi,PhiT,Psi,PsiT);
 
 %% Acquisition
 y = Phi(x);
@@ -72,28 +82,17 @@ B = 5;
 
 %% Recovery
 % Recovery parameters
-params.ATrans = AT;
-% params.threshold = @(z) top_threshold(bs_threshold(z));
-params.threshold = bs_threshold;
-params.invpsi = invpsi;
-params.psi = psi;
-params.Phi = Phi;
-params.Phi_t = Phi_t;
+params.AT = AT;
+params.PsiT = PsiT;
+params.Psi = Psi;
 
-% BIHT Recovery
+% bcsspl Recovery
 tic
-xhat = bcsspl_decoder(y,A,params);
-biht_time = toc;
+xhat = bcsspl_decoder(yq,A,params);
+recon_time = toc;
 
 %% Attempt Rescaling
 xhat = xhat + Xmu;  % Return the mean to the result
-% xhat = (xhat - min(xhat)) ./ (max(xhat) - min(xhat));
-% xhat = (Xrange(2) - Xrange(1)).*(xhat + Xrange(1));
-% xhat = xhat ./ norm(xhat);
-% xhat = reshape(xhat,imsize);
-
-% resc_X = 255*(X - Xrange(1))./(Xrange(2) - Xrange(1));
-% resc_xhat = 255*(xhat - min(xhat(:))) ./ (max(xhat(:)) - min(xhat(:)));
 
 %% Evaluation
 d_mse = MSE(X,xhat);
@@ -103,7 +102,7 @@ d_rms = RMS(X,xhat);
 d_ssim = ssim(X,xhat);
 d_psnr = PSNR(xhat,X);
 
-csq_printf('Recovered x in %0.2f sec.\n',biht_time);
+csq_printf('Recovered x in %0.2f sec.\n',recon_time);
 csq_printf('SNR = %f dB\n',d_snr);
 csq_printf('PSNR = %f dB\n',d_psnr);
 csq_printf('MSE = %f, (Log: %f)\n',d_mse,log10(d_mse));
