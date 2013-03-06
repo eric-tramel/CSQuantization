@@ -7,17 +7,18 @@ clear
 csq_deps('common','wavelet','ssim','bcs-spl-dpcm');
 
 %% Load in data
-X = csq_load_data('image','barbara.jpg');
+X = csq_load_data('image','lena.jpg');
 % X = X(129:384,129:384);
 imsize = size(X);
 x = X(:);
 
-% type = 'dwt2d';
+type = 'dwt2d';
 % type = 'ddwt2d';
-type = 'dct2d-blk';
+% type = 'dct2d-blk';
 
-quant = 'sq';
+% quant = 'sq';
 quant = 'dpcm';
+% quant = 'noquant';
 
 % Mean subtraction
 % Xmu = mean(x);
@@ -72,7 +73,7 @@ end
 [Psi PsiT] = csq_generate_xform(type,params);
 
 % randn('seed',0);
-[Phi PhiT] = csq_generate_projection('gaussian',params);
+[Phi PhiT] = csq_generate_projection('binary',params);
 
 %% Unification of Phi and Psi
 [A AT] = csq_unify_projection(Phi,PhiT,Psi,PsiT);
@@ -96,7 +97,6 @@ params.AT = AT;
 params.PsiT = PsiT;
 params.Psi = Psi;
 
-% bcsspl Recovery
 tic
 xhat = bcsspl_decoder(yq,A,params);
 recon_time = toc;

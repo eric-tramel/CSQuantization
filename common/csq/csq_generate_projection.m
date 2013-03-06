@@ -149,8 +149,20 @@ case 'gaussian'
         AT = @(z) PhiT*z;
     end
     
-% case 'binary'
-
+case 'binary'
+    Phi = round(rand(M,N));
+    Phi(Phi<0.5) = -1;
+    % This precalculation is basically the pinv(Phi), but this
+    % is faster.
+    PhiT = ((Phi*Phi')\Phi)';
+   
+    if block_mode
+        A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
+        AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
+    else
+        A = @(z) Phi*z;
+        AT = @(z) PhiT*z;
+    end
 otherwise
 	return_str = sprintf('Projection "%s" is unsupported.',proj_name);
 	error('csq_generate_projection:UnsupportedTransform',return_str);
