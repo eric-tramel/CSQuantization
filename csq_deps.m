@@ -61,7 +61,7 @@ for i=1:nargin
         case 'biht'
             addpath([repo_dir '/biht']);
         case 'bcsspl'
-            addpath([repo_dir '/biht']);
+            addpath([repo_dir '/bcsspl']);
         case 'experiments'
             addpath([repo_dir '/experiments']);
         

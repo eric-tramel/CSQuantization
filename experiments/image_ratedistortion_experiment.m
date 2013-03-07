@@ -32,6 +32,7 @@ for rate_idx=1:rd_points
     rates(rate_idx) = point_results.true_bitrate;
     distortion.mse_curve(rate_idx)  = MSE(X(:),XF(:));
     distortion.snr_curve(rate_idx)  = SNR(X(:),XF(:));
+    distortion.psnr_curve(rate_idx)  = PSNR(X(:),XF(:));
     distortion.rms_curve(rate_idx)  = RMS(X(:),XF(:));
     distortion.ssim_curve(rate_idx) = ssim(X,XF);
 end
