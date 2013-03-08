@@ -12,9 +12,9 @@ X = csq_load_data('image','lena.jpg');
 imsize = size(X);
 x = X(:);
 
-type = 'dwt2d';
+% type = 'dwt2d';
 % type = 'ddwt2d';
-% type = 'dct2d-blk';
+type = 'dct2d-blk';
 
 % quant = 'sq';
 quant = 'dpcm';

@@ -103,7 +103,7 @@ M = round(subrate*N);
 % specific to the system running this code.
 if csq_in_octave
     rand('state',mod(rand_seed,2^32));
-    randn('state',mod(rand_Seed,2^32));
+    randn('state',mod(rand_seed,2^32));
 else
     s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
     RandStream.setDefaultStream(s);
@@ -165,11 +165,11 @@ case 'gaussian'
     
 case 'binary'
     Phi = round(rand(M,N));
-    Phi(Phi<0.5) = -1;
+    Phi(~Phi) = -1;
     % This precalculation is basically the pinv(Phi), but this
     % is faster.
     PhiT = ((Phi*Phi')\Phi)';
-   
+
     if block_mode
         A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
         AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));

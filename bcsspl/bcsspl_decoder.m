@@ -27,7 +27,7 @@ for i = 1:max_iterations
   end
   if (params.verbose)
     D_psnr = PSNR(params.original_image, PsiT(x));
-    fprintf('%d: RMS: %.2f, PSNR: %.2f (dB) \n', i, D,D_psnr);
+    csq_printf('%d: RMS: %.2f, PSNR: %.2f (dB) \n', i, D,D_psnr);
   end
   D_prev = D;
 end
