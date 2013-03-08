@@ -1,4 +1,4 @@
-function [A AT B BT] = projection_srmblk(M,N,trans_mode,blksize,is_blocked,imsize,block_dim,Nb)
+function [A AT B BT] = projection_srmblk(subrate,N,trans_mode,blksize,is_blocked,imsize,block_dim)
 %PROJECTION_SRMBLK generate funciton handles for SRM-block random projection.
 %
 % function [A AT B BT] = projection_srmblk(M,N,trans_mode,blksize,is_blocked,imsize,block_dim,Nb)
@@ -31,11 +31,27 @@ function [A AT B BT] = projection_srmblk(M,N,trans_mode,blksize,is_blocked,imsiz
 
 %% Input Handling
 % Check to see if we are in image or vector projection mode
+Nb = 0;
 if nargin < 5
 	is_blocked = 0;
 	imsize = [];
 	block_dim = [];
-	Nb = 0;
+end
+
+%% Block-based settings
+if is_blocked
+    N = block_dim(1)*block_dim(2);
+    blocks = imsize ./ block_dim;
+    Nb = blocks(1)*blocks(2);
+end
+
+%% Get Measurements
+M = round(subrate*N);
+
+if M > N
+    rescale = M ./ N;
+else
+    rescale = 1;
 end
 
 %% Forward Projection
@@ -59,16 +75,23 @@ if Mleft ~= 0
 end
 
 % Set up forward transform
-A = @(z) srm_forward_batch(B,z);
+% To speed up this process, we will perform a check to see if we indeed
+% have more than one projection
+if length(B) > 1
+    A = @(z) srm_forward_batch(B,z);
+else
+    A = @(z) B{1}(z);
+end
+
 
 %% Backward Projection
 % Set up transpose transform. Needs to account for whether or not the 
 % measurements have to be rearranged in block-based mode.
 % To do this, we need to sum together all the individual projections
 if is_blocked
-    AT = @(z) srm_transpose_batch(BT,z,N*Nb,Nb,i,M./N);
+    AT = @(z) srm_transpose_batch(BT,z,N*Nb,Nb,i,rescale);
 else
-    AT = @(z) srm_transpose_batch(BT,z,N,1,i,M./N);
+    AT = @(z) srm_transpose_batch(BT,z,N,1,i,rescale);
 end
 
 %% Helper functions
@@ -93,12 +116,12 @@ function y = srm_forward(Phi,x,M,imsize,block_dim,Nb)
 % Using a separate function to avoid in-line definition mess.
 y = reshape(x,imsize);
 y = im2col(y,block_dim,'distinct');
-y = projection_batch(Phi,y,M,Nb);
+y = projection_batch(Phi,y,Nb,M);
 y = y(:);
 
 function x = srm_transpose(PhiT,y,M,N,block_dim,imsize,Nb)
 x = reshape(y,[M,Nb]);
-x = projection_batch(PhiT,x,N,Nb);
+x = projection_batch(PhiT,x,Nb,N);
 x = col2im(x,block_dim,imsize,'distinct');
 x = x(:);
 

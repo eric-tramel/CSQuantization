@@ -35,11 +35,30 @@ function Y = projection_batch(A,X,B,N)
 % TODO: There should be a faster way to do this batch projection than
 % through a loop. Need to look into methods for applying a 
 % function along columns.
+%
+% It seems that the fastest approach may be to build a batch version of the
+% blk_t1d, blk_f1d functions to use with block based projections. The
+% reasoning for this is that the majority of time is taken up by the
+% 'hadamard' functions which need to be regenerated on each blk_f1d/blk_t1d
+% call. In batch mode these would only be generated once.
 
+
+%% Looping Approach
 if nargin > 2
-	Y = zeros(M,B);
+	Y = zeros(N,B);
 end
 
 for i=1:B
 	Y(:,i) = A(X(:,i));
 end
+
+%% Cell Approach
+% Found in practice that this approach is not any faster than looping
+% X = num2cell(X,1);
+% Y = cell2mat(cellfun(A,X,'UniformOutput',false));
+
+
+
+
+
+

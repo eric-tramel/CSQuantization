@@ -5,7 +5,7 @@
 clear
 
 % Experiment variables
-proj_type = 'srm-blk';
+proj_type = 'gaussian';
 block_based = 1;
 S1 = 0.25;
 S2 = 0.5;

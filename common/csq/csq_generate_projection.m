@@ -88,10 +88,12 @@ if FLAG_imsizespecified && ~FLAG_Nspecified && ~block_mode
 	N = imsize(1)*imsize(2);
 end
 
-if block_mode
-	N = block_dim(1)*block_dim(2);
-    Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
-end
+%%% Adding these settings to the srm functions, specifically, since they
+%%% have very unique batch modes.
+% if block_mode
+% 	N = block_dim(1)*block_dim(2);
+%     Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
+% end
 
 %% Handle types of projection
 % Get the number of measurements
@@ -106,33 +108,37 @@ else
     RandStream.setDefaultStream(s);
 end
 
+%% Main Switch
 switch proj_name
-case 'srm-blk'
-    csq_required_parameters(params,'blksize','trans_mode');
-    [A AT] = projection_srmblk(M,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim,Nb);
+    case 'srm-blk'
+        csq_required_parameters(params,'blksize','trans_mode');
+        [A AT] = projection_srmblk(subrate,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim);
 
-% case 'srm-fft'
-%     [A AT] = projection_srmfft(M,N,block_mode,imsize,block_dim,Nb);    
+    case 'gaussian'
+        if block_mode
+            N = block_dim(1)*block_dim(2);
+            Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
+            M = round(subrate*N);
+        end
 
+        if M <= N
+            Phi = orth(randn(N,M))';
+            PhiT = Phi';
+        else
+            Phi = orth(randn(M,N));
+            PhiT = Phi';
+        end
 
-case 'gaussian'
-    if M <= N
-        Phi = orth(randn(N,M))';
-        PhiT = Phi';
-    else
-        Phi = orth(randn(M,N));
-        PhiT = Phi';
-    end
-    
-    if block_mode
-        A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
-        AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
-    else
-        A = @(z) Phi*z;
-        AT = @(z) PhiT*z;
-    end
+        if block_mode
+            A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
+            AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
+        else
+            A = @(z) Phi*z;
+            AT = @(z) PhiT*z;
+        end
     
 % case 'binary'
+% case 'srm-fft'  
 
 otherwise
 	return_str = sprintf('Projection "%s" is unsupported.',proj_name);
@@ -141,18 +147,18 @@ end
 
 
 %----------------------------------------------------
-function y = batch_projection(A,x,M,B)
-	y = zeros(M,B);
-	for i=1:B
-		y(:,i) = A(x(:,i));
-    end
-
-function y = srm_batch(A,x)
-    % Assuming A is a cell array
-    y = [];
-    for i=1:length(A)
-        y = vertcat(y,A{i}(x));
-    end
+% function y = batch_projection(A,x,M,B)
+% 	y = zeros(M,B);
+% 	for i=1:B
+% 		y(:,i) = A(x(:,i));
+%     end
+% 
+% function y = srm_batch(A,x)
+%     % Assuming A is a cell array
+%     y = [];
+%     for i=1:length(A)
+%         y = vertcat(y,A{i}(x));
+%     end
 
 function v = vectorize(y)
 	v = y(:);
