@@ -10,7 +10,7 @@ function [A AT] = csq_generate_projection(proj_name,params)
 % Parameter fields:
 %
 %	block_based:	TRUE, Use block-based CS Acquisition
-%			FALSE, Full signal sampling
+%                   FALSE, Full signal sampling
 %	block_dim:	Vector of block size dimensionality.
 %	subrate:	Value in [0,1], specify the number of measurements
 %			in relation to ambient dimensionality.
@@ -18,11 +18,16 @@ function [A AT] = csq_generate_projection(proj_name,params)
 %	imsize:		Vector of image dimensionality
 %	N: 		Dimensionality of signal
 
-%% Variables
+%% Default Variables
 block_mode = 0;
-%%% Disabling seed support for octave compatability
-%rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
-rand_seed = 1;
+
+% Set the RNG seed to the current time. 
+% Getting the current UTC is dependent on system running this code.
+if csq_in_octave
+    rand_seed = time; % Current UTC in seconds 
+else
+    rand_seed = java.lang.System.currentTimeMillis; % Current UTC in milliseconds
+end
 
 %% Input checking
 csq_required_parameters(params,'subrate');
@@ -91,11 +96,20 @@ end
 % Get the number of measurements
 M = round(subrate*N);
 
-%%% Disabling seed support for octave compatability
-% Set the RNG seed
-% s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
-% RandStream.setDefaultStream(s);
 
+% Set the RNG seed
+% WARNING: This code does not garuntee that the RNG will operate
+% identically between Matlab and Octave. Results will, more than likely, be
+% specific to the system running this code.
+if csq_in_octave
+    rand('state',mod(rand_seed,2^32));
+    randn('state',mod(rand_Seed,2^32));
+else
+    s = RandStream('mcg16807','Seed',mod(rand_seed,2^32));
+    RandStream.setDefaultStream(s);
+end
+
+%% Generate Projection
 switch proj_name
 case 'srm-blk'
 	csq_required_parameters(params,'blksize','trans_mode');
@@ -170,6 +184,7 @@ end
 
 
 
+%% Helper Functions
 %----------------------------------------------------
 function y = batch_projection(A,x,M,B)
 	y = zeros(M,B);
