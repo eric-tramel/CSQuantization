@@ -53,20 +53,20 @@ function [A AT] = single_projector_set(M,N,is_blocked,imsize,block_dim,Nb)
 function y = srm_forward(Phi,x,M,imsize,block_dim,Nb)
     y = reshape(x,imsize);
     y = im2col(y,block_dim,'distinct');
-    y = batch_projection(Phi,y,M,Nb);
+    y = projection_batch(Phi,y,M,Nb);
     y = y(:);
 
 function x = srm_transpose(PhiT,y,M,N,block_dim,imsize,Nb)
     x = reshape(y,[M,Nb]);
-    x = batch_projection(PhiT,x,N,Nb);
+    x = projection_batch(PhiT,x,N,Nb);
     x = col2im(x,block_dim,imsize,'distinct');
     x = x(:);
     
-function y = batch_projection(A,x,M,B)
-% 	y = zeros(M,B);
-    for i=1:B
-		y(:,i) = A(x(:,i));
-    end
+% function y = batch_projection(A,x,M,B)
+% % 	y = zeros(M,B);
+%     for i=1:B
+% 		y(:,i) = A(x(:,i));
+%     end
 
 function x = srm_transpose_batch(AT,y,N,Nb,num_projs,rescale)
 	x = zeros(N,1);
