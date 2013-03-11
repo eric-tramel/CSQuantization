@@ -65,6 +65,9 @@ for i=1:nargin
         case 'experiments'
             addpath([repo_dir '/experiments']);
         
+        case 'proj'
+            addpath([repo_dir '/projections']);
+
         otherwise
             return_str = sprintf('Unknown dependency: %s',varargin{i});
             warning('csq_deps:Uknown',return_str);

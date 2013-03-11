@@ -20,6 +20,9 @@ function [A AT] = csq_generate_projection(proj_name,params)
 
 %% Default Variables
 block_mode = 0;
+Nb = 0;
+block_dim = [];
+imsize = [];
 
 % Set the RNG seed to the current time. 
 % Getting the current UTC is dependent on system running this code.
@@ -87,10 +90,12 @@ if FLAG_imsizespecified && ~FLAG_Nspecified && ~block_mode
 	N = imsize(1)*imsize(2);
 end
 
-if block_mode
-	N = block_dim(1)*block_dim(2);
-    Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
-end
+%%% Adding these settings to the srm functions, specifically, since they
+%%% have very unique batch modes.
+% if block_mode
+% 	N = block_dim(1)*block_dim(2);
+%     Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
+% end
 
 %% Handle types of projection
 % Get the number of measurements
@@ -109,88 +114,69 @@ else
     RandStream.setDefaultStream(s);
 end
 
-%% Generate Projection
+%% Main Switch
 switch proj_name
-case 'srm-blk'
-	csq_required_parameters(params,'blksize','trans_mode');
-	rand_vect = randperm(N)';
-	select_vect = randperm(N);
-	select_vect = select_vect(1:M);
-	Phi   = @(z) blk_f1d(z,select_vect,rand_vect,params.trans_mode,params.blksize);
-	PhiT= @(z) blk_t1d(z,N,select_vect,rand_vect,params.trans_mode,params.blksize);
+    case 'srm-blk'
+        csq_required_parameters(params,'blksize','trans_mode');
+        [A AT] = projection_srmblk(subrate,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim);
 
-	if block_mode
-        A = @(z) vectorize( batch_projection(Phi,...
-                                             im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                             M,Nb)) ;
-        AT = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[M Nb]),N,Nb),block_dim,imsize,'distinct'));
-	else
-		A = Phi;
-		AT = PhiT;
-	end
+    case 'gaussian'
+        if block_mode
+            N = block_dim(1)*block_dim(2);
+            Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
+            M = round(subrate*N);
+        end
 
-case 'srm-fft'
-	rand_vect = randperm(N)';
-	select_vect = randperm(round(N/2)-1)+1;
-	select_vect = select_vect(1:round(M/2))';
-	Phi   = @(z) fft1d_f(z, select_vect, rand_vect);
-	PhiT = @(z) fft1d_t(z, N, select_vect, rand_vect);
+        if M <= N
+            Phi = orth(randn(N,M))';
+            PhiT = Phi';
+        else
+            Phi = orth(randn(M,N));
+            PhiT = Phi';
+        end
 
-	if block_mode
-        A = @(z) vectorize( batch_projection(Phi,...
-                                             im2col(reshape(z,imsize),block_dim,'distinct'),...
-                                             M,Nb)) ;
-        AT = @(z) vectorize(col2im( batch_projection(PhiT,reshape(z,[M Nb]),N,Nb),block_dim,imsize,'distinct'));
-	else
-		A = Phi;
-		AT = PhiT;
-	end
-
-case 'gaussian'
-    if M <= N
-        Phi = orth(randn(N,M))';
-        PhiT = Phi';
-    else
-        Phi = orth(randn(M,N));
-        PhiT = Phi';
-    end
+        if block_mode
+            A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
+            AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
+        else
+            A = @(z) Phi*z;
+            AT = @(z) PhiT*z;
+        end
     
-    if block_mode
-        A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
-        AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
-    else
-        A = @(z) Phi*z;
-        AT = @(z) PhiT*z;
-    end
-    
-case 'binary'
-    Phi = round(rand(M,N));
-    Phi(~Phi) = -1;
-    % This precalculation is basically the pinv(Phi), but this
-    % is faster.
-    PhiT = ((Phi*Phi')\Phi)';
+    case 'binary'
+        Phi = round(rand(M,N));
+        Phi(~Phi) = -1;
+        % This precalculation is basically the pinv(Phi), but this
+        % is faster.
+        PhiT = ((Phi*Phi')\Phi)';
 
-    if block_mode
-        A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
-        AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
-    else
-        A = @(z) Phi*z;
-        AT = @(z) PhiT*z;
-    end
+        if block_mode
+            A = @(z) vectorize(Phi*im2col(reshape(z,imsize),block_dim,'distinct'));
+            AT = @(z) vectorize(col2im(PhiT*reshape(z,[M Nb]),block_dim,imsize,'distinct'));
+        else
+            A = @(z) Phi*z;
+            AT = @(z) PhiT*z;
+        end
+
 otherwise
 	return_str = sprintf('Projection "%s" is unsupported.',proj_name);
 	error('csq_generate_projection:UnsupportedTransform',return_str);
 end	
 
-
-
 %% Helper Functions
 %----------------------------------------------------
-function y = batch_projection(A,x,M,B)
-	y = zeros(M,B);
-	for i=1:B
-		y(:,i) = A(x(:,i));
-    end
-    
+% function y = batch_projection(A,x,M,B)
+% 	y = zeros(M,B);
+% 	for i=1:B
+% 		y(:,i) = A(x(:,i));
+%     end
+% 
+% function y = srm_batch(A,x)
+%     % Assuming A is a cell array
+%     y = [];
+%     for i=1:length(A)
+%         y = vertcat(y,A{i}(x));
+%     end
+
 function v = vectorize(y)
 	v = y(:);

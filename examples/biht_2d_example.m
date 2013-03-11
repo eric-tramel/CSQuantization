@@ -39,7 +39,7 @@ params.k = round(0.1*params.N);
 params.block_based = 1;
 params.block_dim = [32 32];
 params.Nb = (imsize(1)./params.block_dim(1))*(imsize(2)./params.block_dim(2));
-params.subrate = 4;
+params.subrate = 2;
 M = round(params.subrate*N);
 params.M = M;
 % SRM specific parameters
