@@ -130,6 +130,20 @@
 			],
 			"name": "Examples",
 			"path": "examples"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "Documentation",
+			"path": "/Users/eric/Google Drive/git/CSQuantization.wiki"
 		}
 	]
 }
