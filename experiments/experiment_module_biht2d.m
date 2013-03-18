@@ -20,17 +20,10 @@ params.smoothing = @(z) z;
 
 % Some input checking for different experiment modes
 if params.block_based
-    csq_required_parameters(params,'block_dim');
-    % Determine the number of blocks in the image
-    params.Nb = (params.imsize(1)./params.block_dim(1))*(params.imsize(2)./params.block_dim(2));
+    csq_required_parameters(params,'block_dim','smooth_id');
     
-    % WARING: For some reason smoothing seems to be causing significant
-    % recovery problems. So I'm just removing it for now.
-%     % Set smoothing function
-    blockN = params.block_dim(1)*params.block_dim(2);
-    % params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,params.imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
-    % params.smoothing = @(z) csq_vectorize( wiener2(reshape(z,params.imsize),[3 3]) );
-    params.smoothing = @(z) csq_vectorize( deblocking_filter( reshape(z,params.imsize),params.block_dim,2) );
+    % Get smoothing function
+    params.smoothing = csq_generate_smoothing(params.smooth_id,params);
 end
 
 switch params.threshold

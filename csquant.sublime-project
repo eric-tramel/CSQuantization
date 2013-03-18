@@ -2,50 +2,134 @@
 	"folders":
 	[
 		{
-			"path": ".",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"folder_exclude_patterns":
+			[
+				""
+			],
 			"name": "Root",
-			"folder_exclude_patterns": [""],
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "/Users/eric/Google Drive/git/CSQuantization"
 		},
 		{
-			"path": "toolboxes",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "Packages",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "toolboxes"
 		},
 		{
-			"path": "projections",
-			"name": "Projections",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
-		},
-		{
-			"path": "biht",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "1-Bit CS",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "biht"
 		},
 		{
-			"path": "examples",
-			"name": "Examples",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
-		},
-		{
-			"path": "experiments",
-			"name": "Experiments",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
-		},
-		{
-			"path": "common/csq",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "[Tools] CSQ Glue",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "common/csq"
 		},
 		{
-			"path": "common/metrics",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "[Tools] Metrics",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "common/metrics"
 		},
 		{
-			"path": "common/image",
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "[Tools] Image",
-			"file_exclude_patterns":["*.aux","*.pdf","*.out","*.blg","*.bbl","*.sublime-workspace","*.ini"]
+			"path": "common/image"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "Projections",
+			"path": "projections"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "Experiments",
+			"path": "experiments"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "Examples",
+			"path": "examples"
 		}
 	]
 }

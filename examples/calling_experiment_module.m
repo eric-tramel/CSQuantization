@@ -7,6 +7,7 @@ csq_deps('srm','wavelet','common','experiments','biht','inpaint');
 X = csq_load_data('image','lena.jpg');
 
 % Set BIHT-2D experimental parameters
+params.rand_seed = 1;							% Seed for the RNG's
 params.block_based = 1;                         % Block acquisition?
 params.block_dim = [32 32];                     % Block acq. dimensions
 params.htol = 0;                                % Maximum hamming error
@@ -20,6 +21,9 @@ params.trans_mode = 'BWHT';                     % Req. SRM parameter
 params.verbose = 1;
 params.k = round(0.05*512*512);
 params.L = 4;
+params.smooth_id = 'weiner';					% Name of smoothing function
+params.radius = 2;								% Radius for deblocking filter
+params.window_dim = [3 3];						% Weiner filter window size
 
 target_bitrate = 2;
 
