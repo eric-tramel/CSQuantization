@@ -123,7 +123,7 @@ hiter = Inf;
 iter = 0;
 conv_check = Inf;
 M = length(y);
-update = @(z) update_step(z,y,A,AT,M)
+update = @(z) update_step(z,y,A,AT,M);
 
 % Main Recovery Loop
 while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
@@ -132,8 +132,8 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     
     r = update(x);
     r = psi(params.smoothing(invpsi(r)));
-    
     r = update(r);
+    
     x = threshold(r); 
     
     % Normalize
