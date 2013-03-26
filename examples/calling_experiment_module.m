@@ -4,31 +4,47 @@
 clear
 csq_deps('srm','wavelet','common','experiments','biht','inpaint','proj');
 
-X = csq_load_data('image','lena.jpg');
+filename = 'lena.jpg';
+X = csq_load_data('image',filename);
 
-% Set BIHT-2D experimental parameters
+
+% General Parameters
 params.rand_seed = 1;							% Seed for the RNG's
 params.block_based = 1;                         % Block acquisition?
 params.block_dim = [32 32];                     % Block acq. dimensions
-params.htol = 0;                                % Maximum hamming error
-params.maxIter = 200;                          % Recovery iterations
-params.threshold = 'bivariate-shrinkage';       % Set threshold type
-params.lambda = 30;                             % Required B-S parameter
-params.xform = 'dwt2d';                         % Sparse Transform
-params.projection = 'gaussian';                  % Projection type
-params.blksize = 32;                            % Req. SRM parameter
-params.trans_mode = 'BWHT';                     % Req. SRM parameter
+params.imsize = size(X);
+params.N = length(X(:));
 params.verbose = 1;
-params.k = round(0.05*512*512);
-params.L = 4;
-params.smooth_id = 'deblock';					% Name of smoothing function
-params.radius = 2;								% Radius for deblocking filter
-params.window_dim = [3 3];						% Weiner filter window size
 
-target_bitrate = 2;
+% CS Projection Parameters
+params.projection.id = 'gaussian';
+params.projection.blksize = 32;
+params.projection.trans_mode = 'BWHT';
+
+% Transform Parameters
+params.transform.id = 'dwt2d';
+params.transform.L = 4;
+
+% Thresholding parameters
+params.threshold.id = 'bivariate-shrinkage';
+params.threshold.lambda = 30;
+params.threshold.k = round(0.05*params.N);
+
+% Smoothing parameters
+params.smoothing.id = 'none';
+params.smoothing.radius = 2;
+params.smoothing.window_dim = [3 3];
+
+% BIHT Parameters
+params.biht.htol = 0;                                % Maximum hamming error
+params.biht.maxIter = 200;                          % Recovery iterations
+
+% Experiment parameters
+params.experiment.target_bitrate = 2;
+params.experiment.filename = filename;
 
 % Call the module
-[XF results] = experiment_module_biht2d(X,target_bitrate,params);
+[XF results] = experiment_module_biht2d(X,params);
 
 % Display results
 figure(1);
