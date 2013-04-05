@@ -1,4 +1,4 @@
-function [A AT] = csq_generate_projection(proj_name,params)
+function [A AT] = csq_generate_projection(params)
 % [A AT] = csq_generate_projection('projection name',params)
 %
 % Generate forward and transpose function handles for the given
@@ -33,8 +33,8 @@ else
 end
 
 %% Input checking
-csq_required_parameters(params,'subrate');
-subrate = params.subrate;
+csq_required_parameters(params.projection,'subrate','id');
+subrate = params.projection.subrate;
 
 FLAG_Nspecified = 0;
 FLAG_imsizespecified = 0;
@@ -115,10 +115,16 @@ else
 end
 
 %% Main Switch
-switch proj_name
+switch params.projection.id
     case 'srm-blk'
-        csq_required_parameters(params,'blksize','trans_mode');
-        [A AT] = projection_srmblk(subrate,N,params.trans_mode,params.blksize,block_mode,imsize,block_dim);
+        csq_required_parameters(params.projection,'blksize','trans_mode');
+        [A AT] = projection_srmblk(subrate,...
+                                   N,...
+                                   params.projection.trans_mode,...
+                                   params.projection.blksize,...
+                                   block_mode,...
+                                   imsize,...
+                                   block_dim);
 
     case 'gaussian'
         if block_mode
@@ -165,18 +171,5 @@ end
 
 %% Helper Functions
 %----------------------------------------------------
-% function y = batch_projection(A,x,M,B)
-% 	y = zeros(M,B);
-% 	for i=1:B
-% 		y(:,i) = A(x(:,i));
-%     end
-% 
-% function y = srm_batch(A,x)
-%     % Assuming A is a cell array
-%     y = [];
-%     for i=1:length(A)
-%         y = vertcat(y,A{i}(x));
-%     end
-
 function v = vectorize(y)
 	v = y(:);
