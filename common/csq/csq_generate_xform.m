@@ -1,15 +1,19 @@
-function [psi invpsi] = csq_generate_xform(xform,params)
+function [psi invpsi] = csq_generate_xform(params)
 % [psi inpsi] = csq_generate_xform(xform,param)
 % Given a transform name and a set of accompanying parameters, this
 % function will return two function handles which represent the forward and
 % inverse transform.
 
+csq_required_parameters(params.transform,'id');
 
 
-switch xform
-    case 'dct2d'
-       [psi invpsi] = xform_dct2d_blk(params);
+switch params.transform.id
     case 'dct2d-blk'
+      psi = [];
+      invpsi = [];
+      error('csq_generate_xform:BrokenTransform','dct2d-blk code is currently borked.');
+       % [psi invpsi] = xform_dct2d_blk(params);
+    case 'dct2d'
        [psi invpsi] = xform_dct2d(params);   
     case 'dwt2d' 
        [psi invpsi] = xform_dwt2d(params);
@@ -30,6 +34,7 @@ function [psi invpsi] = xform_dct2d_blk(params)
 
 % Verify parameters
 csq_required_parameters(params,'imsize','block_dim');
+csq_required_parameters(params.transform,'L');
 imsize = params.imsize;
 block_dim = params.block_dim;
 Psi = DCT2D_Matrix(params.block_dim(1));
@@ -54,10 +59,11 @@ function [psi invpsi] = xform_dwt2d(params)
 % parameters
 
 % Verify required parameters are included
-csq_required_parameters(params,'L','imsize');
+csq_required_parameters(params,'imsize');
+csq_required_parameters(params.transform,'L');
 
 % Variables
-L = params.L;
+L = params.transform.L;
 num_rows = params.imsize(1);
 num_cols = params.imsize(2);
 
@@ -73,10 +79,11 @@ function [psi invpsi] = xform_ddwt2d(params)
 % parameters
 
 % Verify required parameters are included
-csq_required_parameters(params,'L','imsize');
+csq_required_parameters(params,'imsize');
+csq_required_parameters(params.transform,'L');
 
 % Variables
-L = params.L;
+L = params.transform.L;
 num_rows = params.imsize(1);
 num_cols = params.imsize(2);
 
