@@ -1,14 +1,13 @@
-function smoothing = csq_generate_smoothing(smooth_id,params)
+function smoothing = csq_generate_smoothing(params)
 %CSQ_GENERATE_SMOOTHING return function handle for smoothing function.
 %
-% function smoothing = csq_generate_smoothing(smooth_id,params)
+% function smoothing = csq_generate_smoothing(params)
 %
 % This funciton generates function handles for a smoothing function
 % based upon the specified parameters. Different types of smoothing
 % require differing parametesr for proper functionality.
 %
 %	Inputs:
-%		smooth_id	- Name of smoothing. Supported types:
 %		params 		- Structure containing function parameters.
 %					  Required parameters:
 %					  params.imsize	
@@ -42,34 +41,36 @@ function smoothing = csq_generate_smoothing(smooth_id,params)
 
 %% Check Inputs
 csq_required_parameters(params,'imsize','block_based');
+csq_required_parameters(params.smoothing,'id');
 
 if params.block_based
 	csq_required_parameters(params,'block_dim');
 end
 
 %% Default parameter values
-if ~isfield(params,'radius')
-	params.radius = 2;
+if ~isfield(params.smoothing,'radius')
+	params.smoothing.radius = 2;
 end
 
-if ~isfield(params,'window_dim')
-	params.window_dim = [3 3];
+if ~isfield(params.smoothing,'window_dim')
+	params.smoothing.window_dim = [3 3];
 end
 
 %% Generate Function Handles
-switch smooth_id
+switch params.smoothing.id
 case 'weiner'
+	% Just a spelling check ;)
 	smoothing = csq_generate_smoothing('wiener',params);
 
 case 'wiener'
 	smoothing = @(z) csq_vectorize( wiener2( reshape(z,params.imsize),...
-										     params.window_dim) );
+										     params.smoothing.window_dim) );
 
 case 'deblock'
 	if params.block_based
 	    smoothing = @(z) csq_vectorize( deblocking_filter( reshape(z,params.imsize),...
 														   params.block_dim,...
-														   params.radius));
+														   params.smoothing.radius));
 	else
 		return_str = sprintf('Should not use deblocking if image is not block based.');
 		error('csq_generate_smoothing:Blocking',return_str);
@@ -79,6 +80,6 @@ case 'none'
 	smoothing = @(z) z;
 
 otherwise
-	return_str = sprintf('Threshold "%s" is unsupported.',smooth_id);
+	return_str = sprintf('Threshold "%s" is unsupported.',params.smoothing.id);
     error('csq_generate_smoothing:UnsupportedSmoothing',return_str);
 end

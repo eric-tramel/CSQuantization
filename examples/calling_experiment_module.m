@@ -22,7 +22,7 @@ params.projection.blksize = 32;
 params.projection.trans_mode = 'BWHT';
 
 % Transform Parameters
-params.transform.id = 'dwt2d';
+params.transform.id = 'dct2d-blk';
 params.transform.L = 4;
 
 % Thresholding parameters
