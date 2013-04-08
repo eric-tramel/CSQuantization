@@ -31,10 +31,10 @@ params.imsize = imsize;
 % Projection parameters
 params.block_based = 1;
 params.block_dim = [8 8];
-params.Nb = round(prod(imsize)/prod(params.block_dim));
+params.N = round(prod(imsize)/prod(params.block_dim));
 
 params.subrate = 0.25;
-M = round(params.subrate*params.Nb);
+M = round(params.subrate*params.N);
 params.M = M;
 
 % Recovery parameters
@@ -73,7 +73,7 @@ end
 [Psi PsiT] = csq_generate_xform(type,params);
 
 % randn('seed',0);
-[Phi PhiT] = csq_generate_projection('binary',params);
+[Phi PhiT] = csq_generate_projection('gaussian',params);
 
 %% Unification of Phi and Psi
 [A AT] = csq_unify_projection(Phi,PhiT,Psi,PsiT);
