@@ -44,21 +44,7 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "1-Bit CS",
-			"path": "biht"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.aux",
-				"*.pdf",
-				"*.out",
-				"*.blg",
-				"*.bbl",
-				"*.sublime-workspace",
-				"*.ini"
-			],
-			"name": "[Tools] CSQ Glue",
+			"name": "[Common] CSQ Glue",
 			"path": "common/csq"
 		},
 		{
@@ -72,7 +58,7 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "[Tools] Metrics",
+			"name": "[Common] Metrics",
 			"path": "common/metrics"
 		},
 		{
@@ -86,8 +72,36 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "[Tools] Image",
+			"name": "[Common] Thresholding",
+			"path": "common/threshold"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "[Common] Image",
 			"path": "common/image"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "1-Bit CS",
+			"path": "biht"
 		},
 		{
 			"file_exclude_patterns":
