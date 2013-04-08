@@ -12,73 +12,59 @@ imsize = size(X);
 N = imsize(1)*imsize(2);
 
 %% Pre-processing
-% Normalization
-X = X./norm(X(:));
-
-% Dynamic Range
-Xrange = [min(X(:)); max(X(:))];
-
-% Rasterization
-x = X(:);
-
-% Mean subtraction
-Xmu = mean(x);
+X = X./norm(X(:));					% Normalization
+Xrange = [min(X(:)); max(X(:))];	% Dynamic Range
+x = X(:); 							% Rasterization
+Xmu = mean(x);						% Mean subtraction
 x = x - Xmu;
 
 %% Experiment Parameters
-% Set up wavelet transform
-params.L = log2(min(imsize))-1; % Maximum decomposition
-params.imsize = imsize;
 params.N = N;
-% Additional parameters for bivariate shrinkage
-params.end_level = params.L - 1;
-params.windowsize = 3;
-params.lambda = 50;
-params.k = round(0.1*params.N);
-% Projection parameters
 params.block_based = 1;
 params.block_dim = [32 32];
-params.Nb = (imsize(1)./params.block_dim(1))*(imsize(2)./params.block_dim(2));
-params.subrate = 2;
-M = round(params.subrate*N);
-params.M = M;
-% SRM specific parameters
-params.blksize = 32;
-params.trans_mode = 'BWHT';
-% Recovery parameters
-params.htol = 0;
-params.maxIter = 3000;
+params.imsize = size(X);
 params.verbose = 1;
-% Side parameters
-blockN = params.block_dim(1)*params.block_dim(2);
-params.smoothing = @(z) csq_vectorize( im2col(wiener2(col2im(reshape(z,[blockN params.Nb]),params.block_dim,imsize,'distinct'),[3 3]),params.block_dim,'distinct') );
+
+params.projection.id = 'srm-blk';
+params.projection.blksize = 32;
+params.projection.trans_mode = 'BWHT';
+params.projection.subrate = 2;
+
+params.transform.id = 'dwt2d';
+params.transform.L = log2(min(imsize))-1;	% Maximum decomposition
+
+params.threshold.id = 'bivariate-shrinkage';
+params.threshold.lambda = 50;
+params.threshold.end_level = params.transform.L - 1;
+
+params.smoothing.id = 'wiener';
+
+params.biht.htol = 0;
+params.biht.maxIter = 75;
+
 
 
 %% Sparse Transform Function Handles
-[psi invpsi] = csq_generate_xform('dwt2d',params);
-bs_threshold = csq_generate_threshold('bivariate-shrinkage',params);
-top_threshold = csq_generate_threshold('top',params);
-
+[psi invpsi] = csq_generate_xform(params);
+bs_threshold = csq_generate_threshold(params);
 
 %% Random Projection Function Handles
-[Phi Phi_t] = csq_generate_projection('gaussian',params);
+[Phi Phi_t] = csq_generate_projection(params);
 
 %% Unification
 [A AT] = csq_unify_projection(Phi,Phi_t,psi,invpsi);
 
+%% Smoothing function
+smoothing = csq_generate_smoothing(params);
+
 %% Acquisition
 y = sign(Phi(x));
+M = length(y) ./ length(x);
 
 %% Recovery
-% Recovery parameters
-params.ATrans = AT;
-% params.threshold = @(z) top_threshold(bs_threshold(z));
-params.threshold = bs_threshold;
-params.invpsi = invpsi;
-
 % BIHT Recovery
 tic
-xhat = biht_1d(y,A,params);
+xhat = biht_1d(y,A,AT,psi,invpsi,bs_threshold,smoothing,params);
 biht_time = toc;
 
 %% Attempt Rescaling
@@ -106,7 +92,7 @@ csq_printf('SSIM = %f\n',d_ssim);
 csq_printf('Bitrate = %f bpp.\n',M/params.N);
 
 %% Put up image
-figure(1);
+figure(1); clf;
 imagesc(xhat); 
 axis image;
 colormap(gray);

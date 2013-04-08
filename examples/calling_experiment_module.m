@@ -29,6 +29,7 @@ params.transform.L = 4;
 params.threshold.id = 'bivariate-shrinkage';
 params.threshold.lambda = 30;
 params.threshold.k = round(0.05*params.N);
+params.threshold.end_level = params.transform.L - 1;
 
 % Smoothing parameters
 params.smoothing.id = 'none';
