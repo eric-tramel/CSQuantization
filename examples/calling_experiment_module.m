@@ -10,19 +10,19 @@ X = csq_load_data('image',filename);
 
 % General Parameters
 params.rand_seed = 1;							% Seed for the RNG's
-params.block_based = 1;                         % Block acquisition?
+params.block_based = 0;                         % Block acquisition?
 params.block_dim = [32 32];                     % Block acq. dimensions
 params.imsize = size(X);
 params.N = length(X(:));
 params.verbose = 1;
 
 % CS Projection Parameters
-params.projection.id = 'gaussian';
+params.projection.id = 'srm-blk';
 params.projection.blksize = 32;
 params.projection.trans_mode = 'BWHT';
 
 % Transform Parameters
-params.transform.id = 'dct2d-blk';
+params.transform.id = 'dwt2d';
 params.transform.L = 4;
 
 % Thresholding parameters
@@ -38,7 +38,7 @@ params.smoothing.window_dim = [3 3];
 
 % BIHT Parameters
 params.biht.htol = 0;                                % Maximum hamming error
-params.biht.maxIter = 200;                          % Recovery iterations
+params.biht.maxIter = 10;                          % Recovery iterations
 
 % Experiment parameters
 params.experiment.target_bitrate = 2;
