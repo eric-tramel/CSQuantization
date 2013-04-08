@@ -150,6 +150,12 @@ switch params.projection.id
         end
     
     case 'binary'
+        if block_mode
+            N = block_dim(1)*block_dim(2);
+            Nb = imsize(1)/block_dim(1) * imsize(2)/block_dim(2);
+            M = round(subrate*N);
+        end
+
         Phi = round(rand(M,N));
         Phi(~Phi) = -1;
         % This precalculation is basically the pinv(Phi), but this
