@@ -11,8 +11,8 @@ switch params.transform.id
     case 'dct2d-blk'
       psi = [];
       invpsi = [];
-      error('csq_generate_xform:BrokenTransform','dct2d-blk code is currently borked.');
-       % [psi invpsi] = xform_dct2d_blk(params);
+      % error('csq_generate_xform:BrokenTransform','dct2d-blk code is currently borked.');
+       [psi invpsi] = xform_dct2d_blk(params);
     case 'dct2d'
        [psi invpsi] = xform_dct2d(params);   
     case 'dwt2d' 
@@ -39,9 +39,9 @@ imsize = params.imsize;
 block_dim = params.block_dim;
 Psi = DCT2D_Matrix(params.block_dim(1));
 psi = @(x) vectorize(col2im(Psi*(im2col(reshape(x,imsize), ...
-  block_dim, 'distinc')), block_dim, imsize, 'distinct'));
+  block_dim, 'distinct')), block_dim, imsize, 'distinct'));
 invpsi = @(x) vectorize(col2im(Psi'*(im2col(reshape(x,imsize), ...
-  block_dim, 'distinc')), block_dim, imsize, 'distinct'));
+  block_dim, 'distinct')), block_dim, imsize, 'distinct'));
 
 
 function [psi invpsi] = xform_dct2d(params)
