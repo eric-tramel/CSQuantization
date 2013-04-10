@@ -2,7 +2,7 @@
 % 
 % Demonstrates how to call the experiment modules.
 clear
-csq_deps('srm','wavelet','common','experiments','biht','inpaint','proj');
+csq_deps('srm','wavelet','common','experiments','biht','inpaint','proj','bcs-spl');
 
 filename = 'lena.jpg';
 X = csq_load_data('image',filename);
@@ -22,11 +22,11 @@ params.projection.blksize = 32;
 params.projection.trans_mode = 'BWHT';
 
 % Transform Parameters
-params.transform.id = 'dwt2d';
+params.transform.id = 'dct2d-blk';
 params.transform.L = 4;
 
 % Thresholding parameters
-params.threshold.id = 'bivariate-shrinkage';
+params.threshold.id = 'top';
 params.threshold.lambda = 30;
 params.threshold.k = round(0.05*params.N);
 params.threshold.end_level = params.transform.L - 1;
@@ -38,7 +38,7 @@ params.smoothing.window_dim = [3 3];
 
 % BIHT Parameters
 params.biht.htol = 0;                                % Maximum hamming error
-params.biht.maxIter = 10;                          % Recovery iterations
+params.biht.maxIter = 100;                          % Recovery iterations
 
 % Experiment parameters
 params.experiment.target_bitrate = 2;

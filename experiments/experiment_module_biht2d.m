@@ -40,7 +40,7 @@ switch params.threshold.id
         params.threshold.end_level = params.transform.L - 1;
         params.threhsold.windowsize = 3;
     case 'top'
-        csq_required_parameters(params,'k');
+        csq_required_parameters(params.threshold,'k');
 end
 
 % These are checked inside csq_generate_projection
