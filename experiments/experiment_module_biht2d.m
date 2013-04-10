@@ -33,19 +33,21 @@ if params.block_based
     csq_required_parameters(params,'block_dim');
 end
 
-switch params.threshold
+switch params.threshold.id
     case 'bivariate-shrinkage'
-        csq_required_parameters(params,'lambda');
-        params.threshold.end_level = params.L - 1;
+        csq_required_parameters(params.threshold,'lambda');
+        csq_required_parameters(params.transform,'L');
+        params.threshold.end_level = params.transform.L - 1;
         params.threhsold.windowsize = 3;
     case 'top'
         csq_required_parameters(params,'k');
 end
 
-switch params.projection
-    case 'srm-blk'
-        csq_required_parameters(params,'blksize','trans_mode');
-end
+% These are checked inside csq_generate_projection
+% switch params.projection
+%     case 'srm-blk'
+%         csq_required_parameters(params,'blksize','trans_mode');
+% end
 
 % Determine subrate from bitrate
 %   For the BIHT, since all measurements are 1 bit, the target bitrate (in
