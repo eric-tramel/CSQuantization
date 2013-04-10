@@ -17,7 +17,7 @@ csq_required_parameters(params.projection,'id');
 csq_required_parameters(params.transform,'id');
 csq_required_parameters(params.smoothing,'id');
 % Experimental requirements
-csq_required_parameters(params.experiment,'filename','target_bitrate');
+csq_required_parameters(params.experiment,'target_bitrate');
 
 % Assume X is coming in as an image matrix
 params.imsize = size(X);
@@ -98,10 +98,6 @@ XF = reshape(XF,params.imsize);
 % Outputs
 results.iterations = iterations;
 results.params = params;
-% results.Phi = Phi;                % Can be generated from params
-% results.Phi_t = Phi_t;            % Can be generated from params
-% results.Psi = Psi;                % Can be generated from params
-% results.Psi_t = Psi_t;            % Can be generated from params
 results.true_bitrate = length(y) ./ params.N;
 results.target_bitrate = params.experiment.target_bitrate;
 

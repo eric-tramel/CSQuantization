@@ -114,6 +114,20 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
+			"name": "Q-BCS-SPL",
+			"path": "qbcsspl"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "Projections",
 			"path": "projections"
 		},

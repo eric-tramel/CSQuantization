@@ -3,7 +3,7 @@
 % Demonstrates how to call the experiment modules.
 clear
 
-csq_deps('srm','wavelet','common','experiments','biht','ssim');
+csq_deps('srm','wavelet','common','experiments','biht','ssim','bcs-spl');
 
 % Experiment settings
 image = 'lena.jpg';
@@ -12,18 +12,34 @@ repo_dir = csq_get_repo_dir();
 results_filename = 'lena_biht2d_sub1bpp.mat';
 results_path = [repo_dir '/experiments/results/' results_filename];
 
-% Set BIHT-2D parameters
+% General Settings
+params.rand_seed = 1;
 params.block_based = 0;                         % Block acquisition?
 params.block_dim = [32 32];                     % Block acq. dimensions
-params.htol = 2;                                % Maximum hamming error
-params.maxIter = 4000;                          % Recovery iterations
-params.threshold = 'bivariate-shrinkage';       % Set threshold type
-params.lambda = 50;                             % Required B-S parameter
-params.xform = 'dwt2d';                         % Sparse Transform
-params.projection = 'srm-blk';                  % Projection type
-params.blksize = 32;                            % Req. SRM parameter
-params.trans_mode = 'BWHT';                     % Req. SRM parameter
 params.verbose = 1;
+
+% Set BIHT-2D parameters
+params.biht.htol = 2;                                % Maximum hamming error
+params.biht.maxIter = 10;                          % Recovery iterations
+
+% Projection Parameters
+params.projection.id = 'srm-blk';                  % Projection type
+params.projection.blksize = 32;                            % Req. SRM parameter
+params.projection.trans_mode = 'BWHT';                     % Req. SRM parameter
+
+% Transform Parameters
+params.transform.id = 'dct2d-blk';                         % Sparse Transform
+params.transform.L = 4;
+
+% Threshold Parameters
+params.threshold.id = 'top';       					% Set threshold type
+params.threshold.lambda = 20;                             % Required B-S parameter
+params.threshold.k = round(0.05*512*512);
+
+% Smoothing parameters
+params.smoothing.id = 'none';
+params.smoothing.radius = 2;
+params.smoothing.window_dim = [3 3];
 
 % Call the module
 image_ratedistortion_experiment(image,bitrates,results_path,@experiment_module_biht2d,params);

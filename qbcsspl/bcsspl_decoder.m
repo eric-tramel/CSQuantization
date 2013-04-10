@@ -5,16 +5,12 @@
 
 
 function reconstructed_image = ...
-    bcsspl_decoder(y, A, params)
+    bcsspl_decoder(y, A, AT, Psi, PsiT, threshold, smoothing,params)
 
 max_iterations = params.maxIter; %200;
 TOL = params.tol; %0.0001;
 
-% projection
-Psi = params.Psi;
-PsiT = params.PsiT;
-AT = params.AT;
-
+% Get intial prediction of the recovered image via back-projection.
 x = AT(y);
 
 D_prev = 0;

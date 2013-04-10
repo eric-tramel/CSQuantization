@@ -10,14 +10,14 @@ X = csq_load_data('image',filename);
 
 % General Parameters
 params.rand_seed = 1;							% Seed for the RNG's
-params.block_based = 0;                         % Block acquisition?
+params.block_based = 1;                         % Block acquisition?
 params.block_dim = [32 32];                     % Block acq. dimensions
 params.imsize = size(X);
 params.N = length(X(:));
 params.verbose = 1;
 
 % CS Projection Parameters
-params.projection.id = 'srm-blk';
+params.projection.id = 'gaussian';
 params.projection.blksize = 32;
 params.projection.trans_mode = 'BWHT';
 
@@ -32,7 +32,7 @@ params.threshold.k = round(0.05*params.N);
 params.threshold.end_level = params.transform.L - 1;
 
 % Smoothing parameters
-params.smoothing.id = 'none';
+params.smoothing.id = 'wiener';
 params.smoothing.radius = 2;
 params.smoothing.window_dim = [3 3];
 
@@ -42,7 +42,6 @@ params.biht.maxIter = 100;                          % Recovery iterations
 
 % Experiment parameters
 params.experiment.target_bitrate = 2;
-params.experiment.filename = filename;
 
 % Call the module
 [XF results] = experiment_module_biht2d(X,params);
