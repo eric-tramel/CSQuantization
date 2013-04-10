@@ -59,7 +59,7 @@ end
 if isempty(psiin)
     psi = @(x) x;
 else
-    if ismatrix(psiin)
+    if ~isa(psiin,'function_handle')
         psi = @(x) psiin*x;
     else
         psi = psiin;
@@ -69,7 +69,7 @@ end
 if isempty(invpsiin)
     invpsi = @(x) x;
 else
-    if ismatrix(invpsiin)
+    if ~isa(invpsiin,'function_handle')
         invpsi = @(x) invpsiin*x;
     else
         invpsi = invpsiin;
