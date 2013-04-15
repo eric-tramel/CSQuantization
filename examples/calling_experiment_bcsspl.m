@@ -27,7 +27,6 @@ params.verbose = 1;
 
 % Projection
 params.projection.id = projection;
-params.projection.subrate = [0.05 0.08 0.11 0.11 0.14 0.17 0.2 0.25 0.33 0.37 0.4 0.44 0.47 0.51 0.54];
 
 % Transform
 params.transform.id = xform;
@@ -37,7 +36,6 @@ params.qbcsspl.maxIter = 400;
 params.qbcsspl.tol = 0.0001;
 params.qbcsspl.quant = quant;
 params.qbcsspl.meanSubtraction = 1;
-params.qbcsspl.bits = [4 5 5 6 6 6 6 6 6 6 6 6 6 6 6 6]; 
 
 
 % Call the module

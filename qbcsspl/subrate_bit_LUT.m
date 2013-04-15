@@ -4,12 +4,10 @@ function [S B] = subrate_bit_LUT(bitrate)
 % function [S B] = subrate_bit_LUT(bitrate)
 %
 %  This function will return a subrate (S) and bit-depth (B) for a
-%  given floating-point bitrate target. 
-%
-%	Inputs:
-%
-%
-%	Outputs:
+%  given floating-point bitrate target. BE ADVISED: This LUT has defined
+%  values within the range [0.1,1.5]bpp. If you are using values outside
+%  that range, either update the LUT in this funciton or use AT YOUR OWN
+%  PERIL.
 %
 %
 % Written by: Eric W. Tramel, Ph.D.
@@ -34,30 +32,3 @@ bitrates = linspace(0.1,1.5,15);
 
 S = interp1(bitrates,subrates,bitrate,'linear','extrap');
 B = max(round(interp1(bitrates,bits,bitrate,'linear','extrap')),1);
-
-% fprintf('Subrate   @ 1.0bpp = %0.2f\n',subrates(10));
-% fprintf('Bit-depth @ 1.0bpp = %d\n',bits(10));
-% fprintf('Subrate   @ 1.1bpp = %0.2f\n',subrates(11));
-% fprintf('Bit-depth @ 1.1bpp = %d\n',bits(11));
-% fprintf('Interpolated Subrate   @ %0.2fbpp = %0.2f\n',bitrate,S);
-% fprintf('Interpolated Bit-depth @ %0.2fbpp = %d\n',bitrate,B);
-
-
-
-
-% figure(1); cla;
-% scatter(bits,subrates,25,'r','x');
-% xlabel('Bit Depth');
-% ylabel('Subrate');
-% grid on;
-% figure(1); cla;
-% subplot(2,1,1);
-% 	bar(bitrates,subrates);
-% 	xlabel('Bitrate');
-% 	ylabel('Subrate');
-% 	grid on;
-% subplot(2,1,2);
-% 	bar(bitrates,bits);
-% 	xlabel('Bitrate');
-% 	ylabel('Bit-Depth');
-% 	grid on;
