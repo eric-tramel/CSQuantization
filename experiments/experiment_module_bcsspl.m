@@ -10,26 +10,26 @@ function [xhat results] = experiment_module_bcsspl(X,params)
 % usage of the csq_ glue functions.
 
 %% THIS CODE IS NOT YET IN AN INTEGRATED AND FUNCTIONAL FORM
-error('experiment_module_bcsspl:Unimplemented','This code is not yet working!');
+% error('experiment_module_bcsspl:Unimplemented','This code is not yet working!');
 
 %% Set dependencies
 csq_deps('common','wavelet','ssim','qbcsspl','bcs-spl');
 
 %% Setup
-csq_required_parameters(params,'subrate', ...
+csq_required_parameters(params,...
                                'block_based',...
                                'projection', ...
                                'transform', ...
                                'experiment',...
                                'smoothing',...
-                               'randseed');
+                               'rand_seed');
 
 % Make sure that at least the id's are set
 csq_required_parameters(params.threshold,'id');
 csq_required_parameters(params.projection,'id');
 csq_required_parameters(params.transform,'id');
 csq_required_parameters(params.smoothing,'id');
-csq_required_parameters(params.qbcsspl,'bits','tol','maxIter','quant',...
+csq_required_parameters(params.qbcsspl,'tol','maxIter','quant',...
                                        'meanSubtraction')
 % Experimental requirements
 csq_required_parameters(params.experiment,'target_bitrate');
@@ -51,15 +51,32 @@ if params.block_based == 0
   error('experiment_module_bcsspl:NotBB','BCS-SPL can only run in block-based mode.');
 end
 
-% Do we really need this to be a parameter?
-% params.Nb = round(prod(imsize)/prod(params.block_dim));
+% Is bit-depth specified?
+BITS_SPECIFIED = 0;
+if isfield(params.qbcsspl,'bits')
+  BITS_SPECIFIED = 1;
+end
 
-% This section needs to be reworked. This section should not be
-% taking in a vector of subrates etc. This would be better implemented
-% with an external lookup table function.
-% params.subrate = params.subrates(round(target_bitrate*10));
-% M = round(params.subrate*params.Nb);
-[params.projection.subrate params.qbccspl.bits] = subrate_bit_LUT(params.experiment.target_bitrate);
+SUBRATE_SPECIFIED = 0;
+if isfield(params.projection,'subrate')
+  SUBRATE_SPECIFIED = 1;
+end
+
+% If we don't know anything about subrate and bits, look it up from the table to match the bitrate
+if ~BITS_SPECIFIED && ~SUBRATE_SPECIFIED
+  [params.projection.subrate params.qbcsspl.bits] = subrate_bit_LUT(params.experiment.target_bitrate);
+end
+
+if BITS_SPECIFIED && ~SUBRATE_SPECIFIED
+  % Figure out what subrate is needed to match the bitrate with a given bitdepth
+  params.projection.subrate = params.experiment.target_bitrate / params.qbcsspl.bits;
+end
+
+if SUBRATE_SPECIFIED && ~BITS_SPECIFIED
+  % Figure out what bitdepth is needed to match the bitrate with a given subrate
+  params.qbcsspl.bits = floor(params.experiment.target_bitrate / params.projection.subrate);
+  params.qbcsspl.bits = max(params.qbcsspl.bits, 1); % Make sure we don't have a bit-depth of 0
+end
 % ---------------------------------------------
 
 % Should not store the image within the parameters structure. Too much data.
@@ -72,14 +89,14 @@ smoothing = csq_generate_smoothing(params);
 % This random seed needs to be updated, perhaps a glue function needs to 
 % be made to update the random seed settings without overburdening the 
 % experiment module code?
-if ~params.randseed, randn('seed',params.randseed); end
+% if ~params.randseed, randn('seed',params.randseed); end
 
 % Need to change these settings so that they are defaults which are only
 % used if they aren't already specified in the parameters structure
-params.L = log2(min(imsize)) - 3; % max L - 3 produces the best
-params.end_level = params.L - 1;
-params.windowsize = 3;
-params.lambda = 10; %ddwt and dwt
+params.transform.L = log2(min(imsize)) - 3; % max L - 3 produces the best
+params.threshold.end_level = params.transform.L - 1;
+params.threshold.windowsize = 3;
+params.threshold.lambda = 10; %ddwt and dwt
 
 switch params.transform.id
   case 'dct2d-blk'
@@ -127,18 +144,12 @@ switch params.qbcsspl.quant
     yq = y;
     rate = 0;
 end
+
 %% Recovery
-
-
-% bcsspl_decoder needs to be updated so that it does not
-% require these parameters and they should be, instead, passed
-% as discrete arguments to the decoder function.
-% params.AT = AT;
-% params.PsiT = PsiT;
-% params.Psi = Psi;
-
+fprintf('Q-BCS-SPL, Bit Depth = %d, Subrate = %0.2f\n',params.qbcsspl.bits,params.projection.subrate);
+fprintf('           Target Rate = %0.3f, True Rate = %0.3f\n',params.experiment.target_bitrate,rate);
 tic
-  [xhat iterations] = bcsspl_decoder(yq,A,AT,Psi,PsiT,threshold,smoothing,params);
+  [xhat iterations] = bcsspl_decoder(yq,A,AT,Psi,PsiT,threshold,threshold_final,smoothing,params);
 results.run_time = toc;
 
 %% Attempt Rescaling

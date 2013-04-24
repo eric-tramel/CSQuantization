@@ -13,7 +13,7 @@ quant = 'dpcm';
 projection = 'binary';
 
 image = [filename '.jpg'];
-bitrates = 0.1:0.1:1.5;
+bitrates = 2;
 
 repo_dir = csq_get_repo_dir();
 results_filename = [filename '_' method '_' xform '_' quant '_' projection '.mat'];
@@ -24,6 +24,7 @@ params.block_based = 1;
 params.block_dim = [8 8];
 params.rand_seed = 1;
 params.verbose = 1;
+params.original_image = csq_load_data('image',image);
 
 % Projection
 params.projection.id = projection;
@@ -31,11 +32,17 @@ params.projection.id = projection;
 % Transform
 params.transform.id = xform;
 
+% Smoothing parameters
+params.smoothing.id = 'wiener';
+
+% Threshold parameters
+params.threshold.id = 'bivariate-shrinkage';
+
 % Q-BCS-SPL parameters
 params.qbcsspl.maxIter = 400;
 params.qbcsspl.tol = 0.0001;
 params.qbcsspl.quant = quant;
-params.qbcsspl.meanSubtraction = 1;
+params.qbcsspl.meanSubtraction = 0;
 
 
 % Call the module
