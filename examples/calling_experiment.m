@@ -28,11 +28,11 @@ params.projection.blksize = 32;                            % Req. SRM parameter
 params.projection.trans_mode = 'BWHT';                     % Req. SRM parameter
 
 % Transform Parameters
-params.transform.id = 'dct2d-blk';                         % Sparse Transform
+params.transform.id = 'dwt2d';                         % Sparse Transform
 params.transform.L = 4;
 
 % Threshold Parameters
-params.threshold.id = 'top';       					% Set threshold type
+params.threshold.id = 'bivariate-shrinkage';       					% Set threshold type
 params.threshold.lambda = 20;                             % Required B-S parameter
 params.threshold.k = round(0.05*512*512);
 

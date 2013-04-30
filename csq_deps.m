@@ -38,6 +38,12 @@ for i=1:nargin
         case 'ssim'
             addpath([repo_dir '/toolboxes/ssim']);
         case 'wavelet'
+            % Check to see if we have some issues with the expand function, mostly to
+            % do with using octave.
+            if csq_in_octave()
+                addpath([repo_dir '/common/conflicts/expand']);
+            end
+
             addpath([repo_dir '/toolboxes/WaveletSoftware']);
         case 'bpdq'
             addpath([repo_dir '/toolboxes/bpdq_toolbox']);

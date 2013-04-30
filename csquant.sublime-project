@@ -100,6 +100,20 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
+			"name": "[Common] Conflicts",
+			"path": "common/conflicts"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "1-Bit CS",
 			"path": "biht"
 		},
