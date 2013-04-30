@@ -5,8 +5,10 @@ function image_ratedistortion_experiment(image,bitrates,filename,module,params)
 % given in bits per pixel (bpp). Final curve results are saved to specified
 % filename.
 
-% Make sure that we have git on the path
-csq_deps('git');
+% Store repository information
+%  We are doing this early in case somehow the repository changes while
+%  running. This probably shouldn't happen, but lets be safe.
+repo = csq_get_repo_info();
 
 % Load in image data
 X = csq_load_data('image',image);
@@ -25,6 +27,8 @@ distortion.snr_curve = zeros(rd_points,1);
 distortion.rms_curve = zeros(rd_points,1);
 distortion.ssim_curve = zeros(rd_points,1);
 
+% Main Loop
+%  This experiment iterates over specified target bitrates
 for rate_idx=1:rd_points
     params.experiment.target_bitrate = bitrates(rate_idx);
     [XF point_results] = module(X,params);
@@ -53,12 +57,7 @@ inputs.bitrates = bitrates;
 inputs.params = params;
 inputs.module_name = func2str(module);
 
-% Store repository information
-repo.branch_name = git('rev-parse','--abbrev-ref','HEAD');
-repo.branch_version = git('rev-parse','HEAD');
-
 save_date = date;
-
 
 save(filename,'inputs',...                  % Experiment inputs
               'repo',...                    % Code repository information (for reproduction)
