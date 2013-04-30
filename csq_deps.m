@@ -21,7 +21,7 @@ for i=1:nargin
         % Common directories
         case 'common'
             addpath([repo_dir '/common']);
-            csq_deps('common-image','common-csq','common-metrics','common-threshold');
+            csq_deps('common-image','common-csq','common-metrics','common-threshold','git');
         case 'common-image'
             if (exist('im2col') + exist('col2im')) == 0
                 addpath([repo_dir '/common/image/conflicts']);
@@ -56,12 +56,14 @@ for i=1:nargin
             addpath([repo_dir '/toolboxes/AOP1BCSv1']);
         case 'inpaint'
             addpath([repo_dir '/toolboxes/Inpaint_nans']);
+        case 'git'
+            addpath([repo_dir '/toolboxes/git']);
             
         % Top level directories
         case 'biht'
             addpath([repo_dir '/biht']);
-        case 'bcsspl'
-            addpath([repo_dir '/bcsspl']);
+        case 'qbcsspl'
+            addpath([repo_dir '/qbcsspl']);
         case 'experiments'
             addpath([repo_dir '/experiments']);  
         case 'proj'

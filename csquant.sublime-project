@@ -17,7 +17,7 @@
 				""
 			],
 			"name": "Root",
-			"path": "/Users/eric/Google Drive/git/CSQuantization"
+			"path": "."
 		},
 		{
 			"file_exclude_patterns":
@@ -44,6 +44,62 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
+			"name": "[Common] CSQ Glue",
+			"path": "common/csq"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "[Common] Metrics",
+			"path": "common/metrics"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "[Common] Thresholding",
+			"path": "common/threshold"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "[Common] Image",
+			"path": "common/image"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
 			"name": "1-Bit CS",
 			"path": "biht"
 		},
@@ -58,36 +114,8 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "[Tools] CSQ Glue",
-			"path": "common/csq"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.aux",
-				"*.pdf",
-				"*.out",
-				"*.blg",
-				"*.bbl",
-				"*.sublime-workspace",
-				"*.ini"
-			],
-			"name": "[Tools] Metrics",
-			"path": "common/metrics"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.aux",
-				"*.pdf",
-				"*.out",
-				"*.blg",
-				"*.bbl",
-				"*.sublime-workspace",
-				"*.ini"
-			],
-			"name": "[Tools] Image",
-			"path": "common/image"
+			"name": "Q-BCS-SPL",
+			"path": "qbcsspl"
 		},
 		{
 			"file_exclude_patterns":

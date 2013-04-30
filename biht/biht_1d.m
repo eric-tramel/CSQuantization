@@ -1,4 +1,5 @@
-function [x iters] = biht_1d(y,Ain,params)
+% function [x iters] = biht_1d(y,Ain,params)
+function [x iters] = biht_1d(y,Ain,ATin,psiin,invpsiin,threshold,smoothing,params)
 % biht_1d(y,Phi,params)
 % Code to implement the basic 1D functionality of the the
 % 1-Bit CS recovery procedure: Binary Iterated Hard Thresholding.
@@ -21,13 +22,12 @@ function [x iters] = biht_1d(y,Ain,params)
 % "Robust 1-Bit Compressive Sensing via Binary Stable Embeddings"
 % and in its accompanying demonstration code.
 
-
 %% Variable Initialization
 % Default Variables
 htol = 0;
 maxIter = 1000;
-verbose = 0;
 conv = 1e-9;
+verbose = 0;
 
 % Flags
 FLAG_Nspecified = 0;
@@ -35,22 +35,17 @@ FLAG_ATransspecified = 0;
 FLAG_Kspecified = 0;
 
 %% Check the input parameters
-if isfield(params,'htol')
-	htol = params.htol;
+if isfield(params,'biht')
+    if isfield(params.biht,'htol')
+    	htol = params.biht.htol;
+    end
+
+    if isfield(params.biht,'maxIter')
+        maxIter = params.biht.maxIter;
+    end
 end
 
-if isfield(params,'k')
-    FLAG_Kspecified = 1;
-end
-
-if isfield(params,'maxIter')
-	maxIter = params.maxIter;
-end
-
-if isfield(params,'ATrans')
-	FLAG_ATransspecified = 1;
-end
-
+% Check for optional parameters
 if isfield(params,'N')
 	N = params.N;
     FLAG_Nspecified = 1;
@@ -60,29 +55,42 @@ if isfield(params,'verbose')
     verbose = params.verbose;
 end
 
-if isfield(params,'threshold')
-    threshold = params.threshold;
-else
-    if ~FLAG_Kspecified
-        error('biht1d:NoK','Need to know how many coefficients to retain on each iteration.');
-    end
-    threshold = csq_generate_threshold('top',params);
-end
-
-if isfield(params,'invpsi')
-    invpsi = params.invpsi;
-else
-    invpsi = @(x) x;
-end
-
-if isfield(params,'psi')
-    psi = params.psi;
-else
+% Check to see if the user has specified and sparsifying transform
+if isempty(psiin)
     psi = @(x) x;
+else
+    if ~isa(psiin,'function_handle')
+        psi = @(x) psiin*x;
+    else
+        psi = psiin;
+    end
+end
+
+if isempty(invpsiin)
+    invpsi = @(x) x;
+else
+    if ~isa(invpsiin,'function_handle')
+        invpsi = @(x) invpsiin*x;
+    else
+        invpsi = invpsiin;
+    end
 end
 
 
 %% Input handling
+if ~isa(threshold,'function_handle')
+    error('biht_1d:Thresholding','Threhold input must be a function handle.');
+end
+
+if ~isempty(smoothing)
+    if ~isa(smoothing,'function_handle')
+        error('biht_1d:Smoothing','Smoothing input must be a function handle.');
+    end
+else
+    csq_printf('Smoothing is empty\n');
+    smoothing = @(x) x;
+end
+
 if isa(Ain,'function_handle')
 	A = @(x) sign(Ain(x));
     
@@ -101,11 +109,12 @@ else
     end
 end
 
-if (FLAG_ATransspecified)
-	if isa(params.ATrans,'function_handle')
-		AT = @(x) params.ATrans(x);
+% Check to see if we were actually given a transpose for the projection
+if ~isempty(ATin) 
+	if isa(ATin,'function_handle')
+		AT = @(x) ATin(x);
 	else
-		AT = @(x) params.ATrans*x;
+		AT = @(x) ATin*x;
 	end
 else
 	if isa(Ain,'function_handle')
@@ -131,7 +140,7 @@ while (htol < hiter) && (iter < maxIter) && (conv_check > conv)
     xprev = x;
     
     r = update(x);
-    r = psi(params.smoothing(invpsi(r)));
+    r = psi(smoothing(invpsi(r)));
     r = update(r);
     
     x = threshold(r); 

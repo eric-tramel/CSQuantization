@@ -1,4 +1,4 @@
-function [xhat results] = experiment_module_bcsspl(X,target_bitrate,params)
+function [xhat results] = experiment_module_bcsspl(X,params)
 % function results = experiment_module_bcsspl
 %
 % CSQ Experimental Module for BIHT-2D. For more information regarding the
@@ -9,102 +9,147 @@ function [xhat results] = experiment_module_bcsspl(X,target_bitrate,params)
 % dimensional signal recovery. This script additionally demonstrates the
 % usage of the csq_ glue functions.
 
+%% THIS CODE IS NOT YET IN AN INTEGRATED AND FUNCTIONAL FORM
+% error('experiment_module_bcsspl:Unimplemented','This code is not yet working!');
+
 %% Set dependencies
-csq_deps('common','wavelet','ssim','bcs-spl-dpcm','bcsspl');
+csq_deps('common','wavelet','ssim','qbcsspl','bcs-spl');
 
 %% Setup
-csq_required_parameters(params,'subrates','bits', 'tol', 'maxIter', ...
-                           'block_based','projection', 'quant', ...
-                           'xform','meanSubtraction', 'randseed');
+csq_required_parameters(params,...
+                               'block_based',...
+                               'projection', ...
+                               'transform', ...
+                               'experiment',...
+                               'smoothing',...
+                               'rand_seed');
 
-%% Load in data
-% X = csq_load_data('image','lena.jpg');
-% X = X(129:384,129:384);
+% Make sure that at least the id's are set
+csq_required_parameters(params.threshold,'id');
+csq_required_parameters(params.projection,'id');
+csq_required_parameters(params.transform,'id');
+csq_required_parameters(params.smoothing,'id');
+csq_required_parameters(params.qbcsspl,'tol','maxIter','quant',...
+                                       'meanSubtraction')
+% Experimental requirements
+csq_required_parameters(params.experiment,'target_bitrate');
 
+% Get image size
 imsize = size(X);
 params.imsize = imsize;
 x = X(:);
 
 % Mean subtraction
-if params.meanSubtraction
+if params.qbcsspl.meanSubtraction
   Xmu = mean(x);
 else
   Xmu = 0;
 end
 x = x - Xmu;
 
-%% Experiment Parameters
+if params.block_based == 0
+  error('experiment_module_bcsspl:NotBB','BCS-SPL can only run in block-based mode.');
+end
 
-% Projection parameters
-params.block_based = 1;
-% params.block_dim = [8 8];
-params.Nb = round(prod(imsize)/prod(params.block_dim));
+% Is bit-depth specified?
+BITS_SPECIFIED = 0;
+if isfield(params.qbcsspl,'bits')
+  BITS_SPECIFIED = 1;
+end
 
-% params.subrate = 0.25;
-params.subrate = params.subrates(round(target_bitrate*10));
-M = round(params.subrate*params.Nb);
-params.M = M;
+SUBRATE_SPECIFIED = 0;
+if isfield(params.projection,'subrate')
+  SUBRATE_SPECIFIED = 1;
+end
 
-% Recovery parameters
-% params.tol = 0.0001;
-% params.maxIter = 400;
-% params.verbose = 1;
-% params.randseed = 0;
-params.original_image = x;
+% If we don't know anything about subrate and bits, look it up from the table to match the bitrate
+if ~BITS_SPECIFIED && ~SUBRATE_SPECIFIED
+  [params.projection.subrate params.qbcsspl.bits] = subrate_bit_LUT(params.experiment.target_bitrate);
+end
 
-params.smoothing = @(z) csq_vectorize(wiener2(reshape(z,imsize),[3 3]));
+if BITS_SPECIFIED && ~SUBRATE_SPECIFIED
+  % Figure out what subrate is needed to match the bitrate with a given bitdepth
+  params.projection.subrate = params.experiment.target_bitrate / params.qbcsspl.bits;
+end
 
-if ~params.randseed, randn('seed',params.randseed); end
+if SUBRATE_SPECIFIED && ~BITS_SPECIFIED
+  % Figure out what bitdepth is needed to match the bitrate with a given subrate
+  params.qbcsspl.bits = floor(params.experiment.target_bitrate / params.projection.subrate);
+  params.qbcsspl.bits = max(params.qbcsspl.bits, 1); % Make sure we don't have a bit-depth of 0
+end
+% ---------------------------------------------
 
-% paramteres for wavelets
-params.L = log2(min(imsize)) - 3; % max L - 3 produces the best
-params.end_level = params.L - 1;
-params.windowsize = 3;
-params.lambda = 10; %ddwt and dwt
+% Should not store the image within the parameters structure. Too much data.
+% params.original_image = x;
 
-switch params.xform
+% Use smoothing generation, here
+% params.smoothing = @(z) csq_vectorize(wiener2(reshape(z,imsize),[3 3]));
+smoothing = csq_generate_smoothing(params);
+
+% This random seed needs to be updated, perhaps a glue function needs to 
+% be made to update the random seed settings without overburdening the 
+% experiment module code?
+% if ~params.randseed, randn('seed',params.randseed); end
+
+% Need to change these settings so that they are defaults which are only
+% used if they aren't already specified in the parameters structure
+params.transform.L = log2(min(imsize)) - 3; % max L - 3 produces the best
+params.threshold.end_level = params.transform.L - 1;
+params.threshold.windowsize = 3;
+params.threshold.lambda = 10; %ddwt and dwt
+
+switch params.transform.id
   case 'dct2d-blk'
-    params.lambda = 0.3; % 0.8 with block size [8 8] hard thresholding gives good results
+    params.threshold.lambda = 0.3; % 0.8 with block size [8 8] hard thresholding gives good results
                         % 0.3 with block size [8 8] soft thresholding gives good results
-    params.threshold = csq_generate_threshold('soft',params);
-    params.threshold_final = csq_generate_threshold('soft',params);
+    params.threshold.id = 'soft';
+    threshold = csq_generate_threshold(params);
+    threshold_final = csq_generate_threshold(params);
   case 'dwt2d'
-      params.threshold = csq_generate_threshold('bivariate-shrinkage',params);
-      params.threshold_final = csq_generate_threshold('bivariate-shrinkage-final',params);
+    params.threshold.id = 'bivariate-shrinkage';
+    threshold = csq_generate_threshold(params);
+
+    tmp_params = params; 
+    tmp_params.threshold.id = 'bivariate-shrinkage-final';
+    threshold_final = csq_generate_threshold(tmp_params);
   case 'ddwt2d'
-    params.threshold = csq_generate_threshold('ddwt-bs',params);
-    params.threshold_final = csq_generate_threshold('ddwt-bs-final',params);
+    params.threshold.id = 'ddwt-bs';
+    threshold = csq_generate_threshold(params);
+
+    tmp_params = params; 
+    tmp_params.threshold.id = 'ddwt-bs-final';
+    threshold_final = csq_generate_threshold(tmp_params);
    
   otherwise
     error('unknown type');
 end
 
-[Psi PsiT] = csq_generate_xform(params.xform,params);
-[Phi PhiT] = csq_generate_projection(params.projection,params);
+% Modernized with parameter passing only
+[Psi PsiT] = csq_generate_xform(params);
+[Phi PhiT] = csq_generate_projection(params);
+
 %% Unification of Phi and Psi
 [A AT] = csq_unify_projection(Phi,PhiT,Psi,PsiT);
 
 %% Acquisition
 y = Phi(x);
-params.bit_depth = params.bits(round(target_bitrate*10));
+params.projection.M = length(y(:));
 
-switch params.quant
+switch params.qbcsspl.quant
   case 'sq'
-    [yq rate] = SQ_Coding(y, params.bit_depth, imsize(1),imsize(2));
+    [yq rate] = SQ_Coding(y, params.qbcsspl.bits, imsize(1),imsize(2));
   case 'dpcm'   
-    [yq rate] = DPCM_Coding(y, params.bit_depth, imsize(1),imsize(2));
+    [yq rate] = DPCM_Coding(y, params.qbcsspl.bits, imsize(1),imsize(2));
   otherwise
     yq = y;
     rate = 0;
 end
-%% Recovery
-% Recovery parameters
-params.AT = AT;
-params.PsiT = PsiT;
-params.Psi = Psi;
 
+%% Recovery
+fprintf('Q-BCS-SPL, Bit Depth = %d, Subrate = %0.2f\n',params.qbcsspl.bits,params.projection.subrate);
+fprintf('           Target Rate = %0.3f, True Rate = %0.3f\n',params.experiment.target_bitrate,rate);
 tic
-  [xhat iterations] = bcsspl_decoder(yq,A,params);
+  [xhat iterations] = bcsspl_decoder(yq,A,AT,Psi,PsiT,threshold,threshold_final,smoothing,params);
 results.run_time = toc;
 
 %% Attempt Rescaling
@@ -114,12 +159,8 @@ xhat = xhat + Xmu;  % Return the mean to the result
 % Outputs
 results.iterations = iterations;
 results.params = params;
-results.Phi = Phi;
-results.Phi_t = PhiT;
-results.Psi = Psi;
-results.Psi_t = PsiT;
 results.true_bitrate = rate;
-results.target_bitrate = target_bitrate;
+results.target_bitrate = params.experiment.target_bitrate;
 
 
 
