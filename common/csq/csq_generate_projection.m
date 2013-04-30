@@ -175,7 +175,5 @@ otherwise
 	error('csq_generate_projection:UnsupportedTransform',return_str);
 end	
 
-%% Helper Functions
-%----------------------------------------------------
 function v = vectorize(y)
 	v = y(:);
