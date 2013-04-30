@@ -3,14 +3,14 @@
 % Demonstrates how to call the experiment modules.
 clear
 
-csq_deps('srm','wavelet','common','experiments','biht','ssim','bcs-spl');
+csq_deps('srm','wavelet','common','experiments','biht','ssim','bcs-spl','proj');
 
 % Experiment settings
 image = 'lena.jpg';
-bitrates = linspace(0.75,0.99,10);
+bitrates = linspace(0.05,0.99,5);
 repo_dir = csq_get_repo_dir();
 results_filename = 'lena_biht2d_sub1bpp.mat';
-results_path = [repo_dir '/experiments/results/' results_filename];
+results_path = [repo_dir '/results/' results_filename];
 
 % General Settings
 params.rand_seed = 1;
@@ -20,7 +20,7 @@ params.verbose = 1;
 
 % Set BIHT-2D parameters
 params.biht.htol = 2;                                % Maximum hamming error
-params.biht.maxIter = 10;                          % Recovery iterations
+params.biht.maxIter = 50;                          % Recovery iterations
 
 % Projection Parameters
 params.projection.id = 'srm-blk';                  % Projection type

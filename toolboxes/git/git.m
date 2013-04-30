@@ -1,4 +1,4 @@
-function git(varargin)
+function result = git(varargin)
 % A thin MATLAB wrapper for Git.
 % 
 %   Short instructions:
