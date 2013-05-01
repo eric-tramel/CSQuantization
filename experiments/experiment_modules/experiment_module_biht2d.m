@@ -72,10 +72,12 @@ smoothing = csq_generate_smoothing(params);
 
 %% Experiment
 % Normalization and mean subtraction
-Xeng = norm(X(:));
-xn = X(:) ./ Xeng;
-xmean = mean(xn);
-xn = xn - xmean;
+xmean = mean(X(:));
+xn = X(:) - xmean;
+
+Xeng = norm(xn(:));
+xn = xn(:) ./ Xeng;
+
 
 % Projection
 y = sign(Phi(xn));
@@ -85,11 +87,11 @@ tic
     [XF iterations] = biht_1d(y,A,AT,Psi,Psi_t,threshold,smoothing,params);
 results.run_time = toc;
 
-% Adding the mean back
-XF = XF + xmean;
-
 % Returning the energy
 XF = XF .* Xeng;
+
+% Adding the mean back
+XF = XF + xmean;
 
 % Reshape
 XF = reshape(XF,params.imsize);
