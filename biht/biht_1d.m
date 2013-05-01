@@ -166,6 +166,18 @@ x = x ./ norm(x);
 iters = iter - 1;
 
 if verbose
+    if htol >= hiter
+        csq_printf('[biht_1d.m] Bit Error Converged.\n');
+    end
+
+    if iter >= maxIter
+        csq_printf('[biht_1d.m] Max Iterations Reached.\n');
+    end
+
+    if conv_check <= conv
+        csq_printf('[biht_1d.m] Solution Converged.\n');
+    end
+
     csq_printf('[biht_1d.m] Compelted Recovery. Iters = %d, hfinal = %d.\n',iter,hiter);
 end
 
