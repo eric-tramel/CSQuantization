@@ -20,7 +20,7 @@ params.verbose = 1;
 
 % Set BIHT-2D parameters
 params.biht.htol = 2;                                % Maximum hamming error
-params.biht.maxIter = 50;                          % Recovery iterations
+params.biht.maxIter = 1000;                          % Recovery iterations
 
 % Projection Parameters
 params.projection.id = 'srm-blk';                  % Projection type
