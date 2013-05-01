@@ -72,6 +72,8 @@ for i=1:nargin
             addpath([repo_dir '/qbcsspl']);
         case 'experiments'
             addpath([repo_dir '/experiments']); 
+            addpath([repo_dir '/experiments/cluster_scripts']); 
+            addpath([repo_dir '/experiments/experiment_modules']); 
             addpath([repo_dir '/experiments/experiment_parameters/defaults']);  
             addpath([repo_dir '/experiments/experiment_parameters/1bit']);  
         case 'proj'

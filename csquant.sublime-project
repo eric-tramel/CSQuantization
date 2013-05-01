@@ -156,20 +156,6 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "Experiments",
-			"path": "experiments"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.aux",
-				"*.pdf",
-				"*.out",
-				"*.blg",
-				"*.bbl",
-				"*.sublime-workspace",
-				"*.ini"
-			],
 			"name": "Examples",
 			"path": "examples"
 		},
@@ -184,8 +170,8 @@
 				"*.sublime-workspace",
 				"*.ini"
 			],
-			"name": "Documentation",
-			"path": "/Users/eric/Google Drive/git/CSQuantization.wiki"
+			"name": "Experiments",
+			"path": "experiments"
 		},
 		{
 			"file_exclude_patterns":
@@ -200,6 +186,20 @@
 			],
 			"name": "Parameter Scripts",
 			"path": "experiments/experiment_parameters"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.pdf",
+				"*.out",
+				"*.blg",
+				"*.bbl",
+				"*.sublime-workspace",
+				"*.ini"
+			],
+			"name": "Documentation",
+			"path": "/Users/eric/Google Drive/git/CSQuantization.wiki"
 		}
 	]
 }

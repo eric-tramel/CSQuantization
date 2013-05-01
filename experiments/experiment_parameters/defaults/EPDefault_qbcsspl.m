@@ -1,5 +1,4 @@
 % Default parameter settings for using Q-BCS-SPL recovery
-clear
 csq_deps('common','qbcsspl');
 
 % Set Q-BCS-SPL Parameters

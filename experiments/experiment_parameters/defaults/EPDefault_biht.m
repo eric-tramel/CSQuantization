@@ -1,5 +1,4 @@
 % Default parameter settings for using 1Bit-CS recovery
-clear
 csq_deps('common','biht');
 
 % Set BIHT-2D parameters
