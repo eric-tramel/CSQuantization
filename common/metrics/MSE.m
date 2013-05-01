@@ -6,8 +6,8 @@ x = x(:); y = y(:);
 N = length(x);
 
 if N ~= length(y)
-    error('rms:DimMismatch','Input dimensionalities must match.');
+    error('mse:DimMismatch','Input dimensionalities must match.');
 end
 
 r = x - y;
-mse = r'*r ./ N;
+mse = (r'*r) ./ N;

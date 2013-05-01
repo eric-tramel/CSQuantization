@@ -4,7 +4,7 @@ function image_ratedistortion_experiment(image,bitrates,filename,module,params)
 % Generates a single RD curve for the given image over the given bitrates
 % given in bits per pixel (bpp). Final curve results are saved to specified
 % filename.
-csq_deps('ssim');
+csq_deps('common','ssim');
 
 
 % Store repository information
@@ -60,15 +60,15 @@ for trial = 1:params.trials
 end
 
 % Average the results
-  iterations(rate_idx) = iterations(rate_idx) ./ params.trials;
-  run_times(rate_idx)  = run_times(rate_idx)  ./ params.trials;
-  rates(rate_idx)      = rates(rate_idx)      ./ params.trials;
+  iterations = iterations./ params.trials;
+  run_times  = run_times ./ params.trials;
+  rates      = rates     ./ params.trials;
 
-  distortion.mse_curve(rate_idx)  = distortion.mse_curve(rate_idx)  ./ params.trials;
-  distortion.snr_curve(rate_idx)  = distortion.snr_curve(rate_idx)  ./ params.trials;
-  distortion.psnr_curve(rate_idx) = distortion.psnr_curve(rate_idx) ./ params.trials;
-  distortion.rms_curve(rate_idx)  = distortion.rms_curve(rate_idx)  ./ params.trials;
-  distortion.ssim_curve(rate_idx) = distortion.ssim_curve(rate_idx) ./ params.trials;
+  distortion.mse_curve  = distortion.mse_curve  ./ params.trials;
+  distortion.snr_curve  = distortion.snr_curve  ./ params.trials;
+  distortion.psnr_curve = distortion.psnr_curve ./ params.trials;
+  distortion.rms_curve  = distortion.rms_curve  ./ params.trials;
+  distortion.ssim_curve = distortion.ssim_curve ./ params.trials;
 
 
 
