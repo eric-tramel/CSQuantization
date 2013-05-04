@@ -10,7 +10,7 @@
 #PBS -e 1bit_srm-full_dct.err
 
 EXP_NAME="1bit_srm-full_dct";
-BITRATES="linspace(0.05,1,10)"
+BITRATES="linspace(0.05,1,20)"
 MODULE="@experiment_module_biht2d"
 PARAMS="csq_load_params('1bit/$EXP_NAME.m')"
 
