@@ -6,5 +6,5 @@ csq_deps('common');
 % General Settings
 params.rand_seed = 1;
 params.verbose = 1;
-params.trials = 1;
+params.trials = 5;
 
