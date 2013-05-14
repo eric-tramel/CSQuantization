@@ -20,7 +20,7 @@ switch params.transform.id
     case 'ddwt2d'
        [psi invpsi] = xform_ddwt2d(params);
     otherwise
-        return_str = sprintf('Transform "%s" is unsupported.',xform);
+        return_str = sprintf('Transform "%s" is unsupported.',params.transform.id);
         error('csq_generate_xform:UnsupportedTransform',return_str);
 end
 

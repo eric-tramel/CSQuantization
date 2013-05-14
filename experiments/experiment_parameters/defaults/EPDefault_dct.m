@@ -2,7 +2,7 @@
 csq_deps('common');
 
 % Transform Parameters
-params.transform.id = 'dct';                         	% Use DCT
+params.transform.id = 'dct2d';                         	% Use DCT
 
 % Threshold Parameters
 params.threshold.id = 'hard';       					% Set threshold type
