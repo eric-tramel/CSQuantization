@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l nodes=1:ppn=4
 #PBS -l walltime=192:00:00
-#PBS -q q16p192h@Raptor
+#PBS -q q192p48h@Talon
 #PBS -m e
 #PBS -r n
 #PBS -N 1bit_srm-full_dwt
@@ -19,6 +19,7 @@ BARBARA_SAVEFILE="csq_full_path('results/rd/barbara_$EXP_NAME.mat')"
 BOATS_SAVEFILE="csq_full_path('results/rd/boats_$EXP_NAME.mat')"
 PEPPERS_SAVEFILE="csq_full_path('results/rd/peppers_$EXP_NAME.mat')"
 
+swsetup matlab
 cd ~/git/CSQuantization/experiments
 
 /usr/local/matlab/bin/matlab -nodisplay -r "csq_deps('common'); image_ratedistortion_experiment('lena.jpg',$BITRATES,$LENA_SAVEFILE,$MODULE,$PARAMS);"&

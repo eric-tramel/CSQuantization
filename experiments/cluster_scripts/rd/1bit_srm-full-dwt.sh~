@@ -1,15 +1,15 @@
 #!/bin/bash
 #PBS -l nodes=1:ppn=4
 #PBS -l walltime=192:00:00
-#PBS -q q192p48h@Talon
+#PBS -q q192p48h@RTalon
 #PBS -m e
 #PBS -r n
-#PBS -N 1bit_srm-full_dct
+#PBS -N 1bit_srm-full_dwt
 #PBS -M ewt16@msstate.edu
-#PBS -o 1bit_srm-full_dct.out
-#PBS -e 1bit_srm-full_dct.err
+#PBS -o 1bit_srm-full_dwt.out
+#PBS -e 1bit_srm-full_dwt.err
 
-EXP_NAME="1bit_srm-full_dct";
+EXP_NAME="1bit_srm-full_dwt";
 BITRATES="linspace(0.05,1,20)"
 MODULE="@experiment_module_biht2d"
 PARAMS="csq_load_params('1bit/$EXP_NAME.m')"
